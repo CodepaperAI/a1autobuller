@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  ------------------------------------------------------------------
+  A1 BULLER AUTO — GLOBAL STYLES
+  ------------------------------------------------------------------
+  Theme is driven by the `dark` class on <html> (see ThemeContext).
+  Semantic CSS variables let us describe surfaces once and reuse them
+  everywhere, so a theme toggle only flips a handful of tokens.
+  ------------------------------------------------------------------
+*/
+
+@layer base {
+  :root {
+    /* Light mode — crisp white + cobalt/sapphire blue + dark slate text */
+    --surface: 255 255 255; /* #FFFFFF page background */
+    --surface-elevated: 246 247 249; /* subtle panels */
+    --surface-border: 226 232 240;
+    --text-primary: 15 23 42; /* slate-900 */
+    --text-secondary: 71 85 105; /* slate-600 */
+    --accent: 36 86 235; /* sapphire */
+    --accent-strong: 29 68 216; /* royal */
+    --accent-contrast: 255 255 255;
+  }
+
+  .dark {
+    /* Dark mode — deep black + metallic slate + high-visibility highlights */
+    --surface: 0 0 0; /* #000000 page background */
+    --surface-elevated: 26 29 38; /* metal-900 panels */
+    --surface-border: 43 49 64; /* metal-800 hairlines */
+    --text-primary: 241 245 249; /* slate-100 */
+    --text-secondary: 148 163 184; /* slate-400 */
+    --accent: 96 150 250; /* brand-400 for contrast on black */
+    --accent-strong: 59 116 246; /* brand-500 */
+    --accent-contrast: 255 255 255;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: rgb(var(--surface));
+    color: rgb(var(--text-primary));
+    /* Smooth color transition when the theme toggles */
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  /* Consistent, accessible focus ring across every interactive element */
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgba(36, 86, 235, 0.25);
+  }
+
+  /* Respect users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Reusable semantic surfaces mapped to the theme variables above */
+  .surface {
+    background-color: rgb(var(--surface));
+  }
+  .surface-elevated {
+    background-color: rgb(var(--surface-elevated));
+    border: 1px solid rgb(var(--surface-border));
+  }
+  .text-secondary {
+    color: rgb(var(--text-secondary));
+  }
+  .divider {
+    border-color: rgb(var(--surface-border));
+  }
+
+  /* Section rhythm helper so vertical spacing stays consistent */
+  .section {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+  }
+}
+
+@layer utilities {
+  /* Thin, themed scrollbar */
+  .scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--surface-border)) transparent;
+  }
+  .scrollbar-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-slim::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--surface-border));
+    border-radius: 9999px;
+  }
+}
