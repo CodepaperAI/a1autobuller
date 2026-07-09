@@ -41,25 +41,31 @@ export async function getStaticProps({ params }) {
   const service = getService(params.service);
   const location = getLocation(params.location);
 
-  // Unknown service or location => proper 404 (protects against junk URLs).
   if (!service || !location) {
     return { notFound: true };
   }
 
   const seo = buildSeo(service, location);
 
-  // A few "nearby" and "related service" links for internal SEO linking.
   const relatedLocations = locations
     .filter((l) => l.slug !== location.slug && l.borough === location.borough)
     .slice(0, 3);
+
   const relatedServices = services
     .filter((s) => s.slug !== service.slug && s.category === service.category)
-    .slice(0, 3);
+    .slice(0, 3)
+    // Strip the intro() function — props must be JSON-serializable.
+    .map((s) => ({
+      slug: s.slug,
+      name: s.name,
+      short: s.short,
+      category: s.category,
+      priceFrom: s.priceFrom,
+      duration: s.duration,
+    }));
 
   return {
     props: {
-      // Pass a serializable version of the service (drop the copy functions,
-      // pre-render the location-specific intro string instead).
       service: {
         slug: service.slug,
         name: service.name,
@@ -75,7 +81,6 @@ export async function getStaticProps({ params }) {
       relatedLocations,
       relatedServices,
     },
-    // Incremental Static Regeneration: refresh generated pages daily.
     revalidate: 60 * 60 * 24,
   };
 }
