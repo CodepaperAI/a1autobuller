@@ -115,7 +115,7 @@ export default function LocalServicePage({
     name: "A1 Buller Auto",
     description: seo.metaDescription,
     areaServed: area,
-    telephone: "+1-718-555-0142",
+    telephone: "+1-718-56044455057",
     priceRange: service.priceFrom + "+",
     address: {
       "@type": "PostalAddress",
@@ -183,7 +183,7 @@ export default function LocalServicePage({
                 Book {service.name} in {location.name}
               </Button>
               <Button size="lg" variant="secondary" as="a" href="tel:+17185550142">
-                Call (718) 555-0142
+                Call (604)445-5057
               </Button>
             </div>
           </motion.div>

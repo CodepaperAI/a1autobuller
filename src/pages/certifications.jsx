@@ -11,6 +11,11 @@ import Card from "@/components/ui/Card";
 
 const CERTS = [
   {
+  name: "ICBC Repair Network",
+  detail:
+    "Accredited facility providing hassle-free, direct claims processing and vehicle repairs backed by an ICBC-approved lifetime warranty.",
+},
+  {
     name: "I-CAR Gold Class",
     detail:
       "The highest industry recognition for collision repair training — held by fewer than 1 in 10 shops nationwide.",
@@ -32,12 +37,12 @@ const CERTS = [
     detail: "Isolated aluminum bay, dedicated tooling, and welders trained for aluminum-bodied vehicles.",
   },
   {
-    name: "Nissan-Compatible Repair",
-    detail: "High-voltage-safe handling and structural aluminum capability for electric vehicles.",
+    name: "Nissan Certified ",
+    detail: "Factory-certified repairs using Nissan-approved repair procedures, genuine OEM parts, and advanced equipment to restore your vehicle to manufacturer standards.",
   },
   {
     name: "OEC",
-    detail: "High-voltage-safe handling and structural aluminum capability for electric vehicles.",
+    detail: "Original Equipment Certified repairs using OEM parts, manufacturer-approved procedures, and advanced repair technology to ensure factory-quality results.",
   },
 ];
 
@@ -56,25 +61,27 @@ export default function CertificationsPage() {
       </Head>
 
       <section className="section py-20 sm:py-28">
-        <div className="mx-auto max-w-3xl text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl font-extrabold tracking-tight sm:text-5xl"
-          >
-            Credentials that <span className="text-brand-600">protect your car</span>.
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-secondary mt-4 text-lg leading-relaxed"
-          >
-            Certifications aren&apos;t decoration — they dictate the procedures, tooling,
-            and parts we&apos;re authorized to use. Here&apos;s what ours mean for you.
-          </motion.p>
-        </div>
+      <div className="mx-auto max-w-3xl text-center">
+  <motion.h1
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="text-4xl font-extrabold tracking-tight sm:text-5xl"
+  >
+    Credentials that <span className="text-brand-600">protect your car</span>.
+  </motion.h1>
+  <motion.p
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 0.1 }}
+    className="text-secondary mt-4 text-lg leading-relaxed"
+  >
+    Certifications aren&apos;t decoration — they dictate the precise procedures, 
+    specialized tooling, and genuine parts we&apos;re authorized to use. Here is 
+    exactly what our credentials mean for your vehicle’s safety and resale value.
+  </motion.p>
+</div>
+
 
         <motion.div
           variants={container}

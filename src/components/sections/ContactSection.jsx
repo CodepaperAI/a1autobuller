@@ -129,12 +129,12 @@ export default function ContactSection() {
           <div className="mt-8 space-y-4 text-sm">
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📍</span>
-              <span>123 Northern Blvd, Queens, NY 11101</span>
+              <span>7055 Buller Ave, Burnaby, BC V5J 4S1, Canada</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📞</span>
               <a href="tel:+17185550142" className="transition-colors hover:text-brand-600">
-                (718) 555-0142
+                (604)445-5057
               </a>
             </div>
             <div className="flex items-center gap-3">

@@ -16,7 +16,7 @@ export default function HomePage() {
         <title>A1 Buller Auto | Certified Collision, Body & Mechanical Repair in NYC</title>
         <meta
           name="description"
-          content="A1 Buller Auto is a certified collision and mechanical repair center in Queens, NY — aluminum & EV repair, frame racking, painting, brakes, alignment, tires, and same-day Uber/TLC inspections."
+          content="A1 Buller Auto is a certified collision and mechanical repair center in Queens, NY — aluminum & EV repair, frame racking, painting, brakes, alignment, tires, and same-day Uber inspections."
         />
         <meta name="keywords" content="auto body repair NYC, collision repair Queens, TLC inspection, aluminum repair, frame racking, A1 Buller Auto" />
         <meta property="og:title" content="A1 Buller Auto | Certified Collision & Mechanical Repair" />

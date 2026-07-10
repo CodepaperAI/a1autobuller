@@ -50,8 +50,8 @@ export const services = [
       `A bent frame compromises safety long after the visible damage is fixed. Drivers across ${loc} bring their vehicles to A1 Buller Auto for computerized frame racking that restores factory dimensions to the millimeter.`,
   },
   {
-    slug: "uber-tlc-inspection",
-    name: "Uber & TLC Inspection",
+    slug: "uber-inspection",
+    name: "Uber Inspection",
     short: "NYC TLC vehicle inspection",
     category: "Inspection & Compliance",
     highlights: [
