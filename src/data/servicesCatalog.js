@@ -18,6 +18,24 @@
 /** The 10 core service categories, in the exact order specified. */
 export const SERVICE_CATALOG = [
   {
+  id: "auto-body-repair",
+  name: "Auto Body Repair",
+  icon: "car",
+  priceFrom: 149,
+  duration: "2–8 hrs",
+  tagline: "Professional collision, dent, and panel repairs restored to pre-accident condition.",
+  items: [
+    "Small dent removal",
+    "Major dent repair",
+    "Collision damage repair",
+    "Panel repair & replacement",
+    "Scratch & paint damage repair",
+    "Bumper repair & replacement",
+    "Frame & structural repair",
+    "Insurance claim assistance",
+  ],
+},
+  {
     id: "oil-fluid-maintenance",
     name: "Oil, Filter & Fluid Maintenance",
     icon: "droplet",

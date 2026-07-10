@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { services, locations } from "@/data/seo";
-
+import Image from "next/image";
+import { useTheme } from "@/context/ThemeContext";
 /**
  * Footer
  * -----------------------------------------------------------------------------
@@ -55,7 +56,7 @@ function SocialIcon({ label, path }) {
 
 export default function Footer() {
   const year = new Date().getFullYear();
-
+const { theme, mounted } = useTheme();
   const topServices = services.slice(0, 5);
   const topAreas = locations.slice(0, 5);
 
@@ -64,19 +65,21 @@ export default function Footer() {
       <div className="section grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-sm font-black text-white">
-              A1
-            </span>
-
-            <span className="text-lg font-extrabold tracking-tight">
-              Buller<span className="text-brand-600"> Auto</span>
-            </span>
-          </div>
+          <div className="flex items-center">
+  {mounted && (
+    <Image
+      src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+      alt="A1 Buller Auto Collisions"
+      width={220}
+      height={60}
+      className="h-12 w-auto object-contain"
+      priority
+    />
+  )}
+</div>
 
           <p className="text-secondary mt-4 max-w-xs text-sm leading-relaxed">
-            Certified collision, refinishing, and mechanical repair — plus fast
-            Uber/TLC inspections — for drivers across the five boroughs.
+            CBC-accredited collision repairs, OEM-certified workmanship, aluminum and EV repair expertise, precision refinishing, and a lifetime warranty—all delivered with fast, reliable service.
           </p>
         </div>
 
@@ -137,10 +140,10 @@ export default function Footer() {
       </svg>
 
       <a
-        href="tel:+16044455057"
+        href="tel:+16044234524"
         className="transition-colors hover:text-brand-600"
       >
-        604 445 5057
+        604 423 4524
       </a>
     </li>
 
@@ -178,7 +181,7 @@ export default function Footer() {
         <path d="M12 7v5l3 3" />
       </svg>
 
-      <span>Mon – Sat: 8:00 AM – 7:00 PM</span>
+      <span>Mon – Sat: 8:00 AM – 6:00 PM</span>
     </li>
   </ul>
 </div>

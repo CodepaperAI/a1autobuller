@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import ThemeHead from "@/components/ui/ThemeHead";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 /**
@@ -30,11 +31,7 @@ export default function App({ Component, pageProps }) {
     <ThemeProvider>
       <AuthProvider>
         <CartProvider>
-          <Head>
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <meta name="theme-color" content="#2456eb" />
-            <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-          </Head>
+         <ThemeHead />
 
           {/*
             Publish the next/font variables on :root so they're available

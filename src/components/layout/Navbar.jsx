@@ -7,6 +7,9 @@ import ModeToggle from "@/components/ui/ModeToggle";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import Image from "next/image";
+import { useTheme } from "@/context/ThemeContext";
+
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -54,7 +57,7 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+const { theme, mounted: themeMounted } = useTheme();
   // Only render the portal on the client (document is undefined during SSR).
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -173,15 +176,22 @@ export default function Navbar() {
         ].join(" ")}
       >
         <nav className="section flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5" aria-label="A1 Buller Auto home">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-sm font-black text-white shadow-glow">
-              A1
-            </span>
-            <span className="font-display text-lg font-extrabold tracking-tight">
-              Buller<span className="text-brand-600"> Auto</span>
-            </span>
-          </Link>
-
+          <Link
+  href="/"
+  className="flex items-center"
+  aria-label="A1 Buller Auto Home"
+>
+  {themeMounted && (
+    <Image
+      src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+      alt="A1 Buller Auto Collisions"
+      width={220}
+      height={60}
+      priority
+      className="h-12 w-auto object-contain"
+    />
+  )}
+</Link>
           <div className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => (
               <Link

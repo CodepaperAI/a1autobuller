@@ -133,13 +133,13 @@ export default function ContactSection() {
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📞</span>
-              <a href="tel:+17185550142" className="transition-colors hover:text-brand-600">
-                (604)445-5057
+              <a href="tel:+16044234524" className="transition-colors hover:text-brand-600">
+                (604)423-4524
               </a>
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">🕒</span>
-              <span>Mon–Sat: 8:00 AM – 7:00 PM</span>
+              <span>Mon–Sat: 8:00 AM – 6:00 PM</span>
             </div>
           </div>
         </div>
