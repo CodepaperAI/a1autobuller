@@ -65,7 +65,7 @@ export const SERVICE_CATALOG = [
   },
   {
     id: "tire-wheel",
-    name: "Tire & Wheel Services",
+    name: " Wheel Services & Alignments",
     icon: "tire",
     priceFrom: 25,
     duration: "30–60 min",
