@@ -181,7 +181,7 @@ const { theme, mounted } = useTheme();
         <path d="M12 7v5l3 3" />
       </svg>
 
-      <span>Mon – Sat: 8:00 AM – 6:00 PM</span>
+      <span>Mon – Sat: 9:00 AM – 6:00 PM</span>
     </li>
   </ul>
 </div>
@@ -193,30 +193,53 @@ const { theme, mounted } = useTheme();
   </h3>
 
   <div className="mt-4 space-y-3">
-    {SOCIAL_LINKS.map((social) => (
-      <a
-        key={social.label}
-        href={social.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={social.label}
-        className="flex items-center gap-3 text-secondary transition-colors hover:text-brand-600"
-      >
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl surface-elevated">
-          <SocialIcon label={social.label} path={social.path} />
-        </div>
+  {SOCIAL_LINKS.map((social) => (
+    <a
+      key={social.label}
+      href={social.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={social.label}
+      className="flex items-center gap-3 text-secondary transition-colors hover:text-brand-600"
+    >
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl surface-elevated">
+        <SocialIcon label={social.label} path={social.path} />
+      </div>
 
-        <div>
-          <p className="font-medium">{social.label}</p>
-          <p className="text-xs text-secondary">
-            {social.label === "Facebook"
-              ? "@a1bullerautocollision"
-              : "@a1bullerautocollision"}
-          </p>
-        </div>
-      </a>
-    ))}
-  </div>
+      <div>
+        <p className="font-medium">{social.label}</p>
+        <p className="text-xs text-secondary">
+          @a1bullerautocollision
+        </p>
+      </div>
+    </a>
+  ))}
+
+  {/* WhatsApp */}
+  <a
+    href="https://wa.me/16044455057"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="WhatsApp"
+    className="flex items-center gap-3 text-secondary transition-colors hover:text-brand-600"
+  >
+    <div className="flex h-10 w-10 items-center justify-center rounded-xl surface-elevated">
+      <svg
+        className="h-5 w-5"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="M20.52 3.48A11.86 11.86 0 0012.04 0C5.51 0 .18 5.33.18 11.86c0 2.09.55 4.13 1.59 5.93L0 24l6.37-1.67a11.86 11.86 0 005.67 1.45h.01c6.53 0 11.86-5.33 11.86-11.86 0-3.17-1.23-6.15-3.39-8.44zM12.05 21.7a9.76 9.76 0 01-4.97-1.36l-.36-.21-3.78.99 1.01-3.69-.23-.38a9.75 9.75 0 01-1.5-5.19c0-5.39 4.39-9.78 9.79-9.78 2.61 0 5.07 1.02 6.92 2.87a9.72 9.72 0 012.87 6.91c0 5.39-4.39 9.79-9.75 9.79zm5.36-7.34c-.29-.14-1.71-.84-1.98-.94-.27-.1-.46-.14-.65.15-.19.29-.75.94-.91 1.13-.17.19-.33.22-.62.07-.29-.14-1.22-.45-2.33-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.44.13-.58.13-.13.29-.33.43-.49.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.65-1.56-.89-2.13-.24-.57-.48-.49-.65-.5h-.55c-.19 0-.5.07-.76.36-.26.29-1 1-.99 2.43.02 1.43 1.03 2.81 1.17 3 .14.19 2.03 3.1 4.92 4.35.69.3 1.23.48 1.65.61.69.22 1.31.19 1.8.12.55-.08 1.71-.7 1.95-1.37.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z" />
+      </svg>
+    </div>
+
+    <div>
+      <p className="font-medium">WhatsApp</p>
+      <p className="text-xs text-secondary">+1 (604) 445-5057</p>
+    </div>
+  </a>
+</div>
 </div>
       </div>
 

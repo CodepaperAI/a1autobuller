@@ -139,7 +139,7 @@ export default function ContactSection() {
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">🕒</span>
-              <span>Mon–Sat: 8:00 AM – 6:00 PM</span>
+              <span>Mon–Sat: 9:00 AM – 6:00 PM</span>
             </div>
           </div>
         </div>
