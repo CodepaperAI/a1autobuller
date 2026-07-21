@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input, Textarea } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { useAuth } from "@/context/AuthContext";
 
 /**
  * ContactSection
@@ -11,17 +10,25 @@ import { useAuth } from "@/context/AuthContext";
  * plus a drag-and-drop (or click) upload area for photos of vehicle damage.
  * Includes client-side validation and an animated success state.
  *
- * Booking intercept: when a signed-out visitor submits, we surface the optional
- * auth prompt first (per the brief). "Continue as guest" still completes the
- * submission, so nothing is ever hard-gated.
+ * Submitting posts straight to /api/contact (which emails the shop via Resend).
+ * No login step — anyone can send.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_FILES = 5;
 const MAX_FILE_MB = 10;
 
+/** Read a File as base64 (strips the "data:*;base64," prefix). */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function ContactSection() {
-  const { isAuthenticated, requestBooking } = useAuth();
   const fileInputRef = useRef(null);
 
   const [values, setValues] = useState({ name: "", email: "", message: "" });
@@ -30,6 +37,8 @@ export default function ContactSection() {
   const [fileError, setFileError] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const setField = (key) => (e) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
@@ -83,22 +92,51 @@ export default function ContactSection() {
   const removeFile = (idx) => setFiles((prev) => prev.filter((_, i) => i !== idx));
 
   // --- Submit --------------------------------------------------------------
-  const actuallySubmit = useCallback(() => {
-    // In production, POST `values` + `files` (FormData) to your API/CRM here.
-    setSubmitted(true);
-    setValues({ name: "", email: "", message: "" });
-    setFiles([]);
-  }, []);
+  const actuallySubmit = useCallback(async () => {
+    setSending(true);
+    setSubmitError("");
+    try {
+      const attachments = await Promise.all(
+        files.map(async (file) => ({
+          filename: file.name,
+          type: file.type,
+          content: await fileToBase64(file),
+        }))
+      );
+
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          message: values.message,
+          attachments,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to send your message.");
+      }
+
+      setSubmitted(true);
+      setValues({ name: "", email: "", message: "" });
+      setFiles([]);
+    } catch (err) {
+      setSubmitError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  }, [files, values]);
 
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
       if (!validate()) return;
-      // Signed-in visitors submit straight away; guests see the optional prompt.
-      if (isAuthenticated) actuallySubmit();
-      else requestBooking(actuallySubmit);
+      actuallySubmit();
     },
-    [validate, isAuthenticated, actuallySubmit, requestBooking]
+    [validate, actuallySubmit]
   );
 
   return (
@@ -304,8 +342,14 @@ export default function ContactSection() {
                   </AnimatePresence>
                 </div>
 
-                <Button type="submit" size="lg" className="w-full">
-                  Submit request
+                {submitError ? (
+                  <p role="alert" className="text-xs font-medium text-red-500">
+                    {submitError}
+                  </p>
+                ) : null}
+
+                <Button type="submit" size="lg" className="w-full" disabled={sending}>
+                  {sending ? "Submitting…" : "Submit request"}
                 </Button>
               </motion.form>
             )}

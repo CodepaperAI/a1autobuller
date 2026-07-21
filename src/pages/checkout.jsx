@@ -3,21 +3,18 @@ import Head from "next/head";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
-import AuthModal from "@/components/ui/AuthModal";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 
 /**
- * /checkout — Booking review + finalization (Phase 3)
+ * /checkout — Booking review + finalization
  * -----------------------------------------------------------------------------
- * Shows every booking the visitor added to the cart (service, date, time) with
- * per-line removal and an indicative total.
- *
- * Smart login intercept: "Confirm Booking" is where anonymity ends. If the
- * visitor is NOT signed in, we surface <AuthModal> instead of finalizing. Once
- * authenticated, the same button confirms the booking, clears the cart, and
- * shows a success state.
+ * Shows every booking in the cart (service, date, time) with per-line removal
+ * and an indicative total. The visitor always enters their name + email here
+ * (logged in or not); "Confirm Booking" validates those, emails the booking to
+ * the shop via /api/booking, clears the cart, and shows the success screen.
  */
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Pretty-print an ISO date (YYYY-MM-DD) as e.g. "Mon, Jul 7, 2026". */
 function formatDate(iso) {
@@ -34,23 +31,61 @@ function formatDate(iso) {
 
 export default function CheckoutPage() {
   const { items, count, estimatedTotal, removeFromCart, clearCart, ready } = useCart();
-  const { isAuthenticated } = useAuth();
 
-  const [authOpen, setAuthOpen] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [formError, setFormError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
   /**
-   * Confirm Booking handler — the intercept gate.
-   * Signed out -> open AuthModal. Signed in -> finalize (mock) + clear cart.
+   * Confirm Booking — always require a name + valid email, then email the
+   * booking to the shop. Only clears the cart / shows success once the email
+   * request succeeds, so a booking is never silently lost.
    */
-  const handleConfirm = () => {
-    if (!isAuthenticated) {
-      setAuthOpen(true);
+  const handleConfirm = async () => {
+    if (submitting) return;
+
+    if (!customerName.trim() || !EMAIL_RE.test(customerEmail)) {
+      setFormError("Please enter your name and a valid email address.");
       return;
     }
-    // TODO: replace with a real POST to your booking API / CRM.
-    setConfirmed(true);
-    clearCart();
+    setFormError("");
+    setSubmitting(true);
+
+    try {
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer: {
+            name: customerName.trim(),
+            email: customerEmail.trim(),
+          },
+          items: items.map((it) => ({
+            serviceName: it.serviceName,
+            date: formatDate(it.date),
+            time: it.time,
+            quantity: 1,
+            priceFrom: it.priceFrom ?? null,
+            lineTotal: it.priceFrom ?? null,
+          })),
+          total: estimatedTotal,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Could not send your booking.");
+      }
+
+      clearCart();
+      setConfirmed(true);
+    } catch (err) {
+      setFormError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   /* --- Success screen ----------------------------------------------------- */
@@ -76,8 +111,8 @@ export default function CheckoutPage() {
             Booking confirmed
           </h1>
           <p className="mt-3 max-w-md text-secondary">
-            Thanks! Your appointment request is in. You can track your repair
-            status live from your account.
+            Thanks! Your appointment request is in — we&apos;ll be in touch by
+            email shortly to confirm the details.
           </p>
           <div className="mt-8 flex gap-3">
             <Button as={Link} href="/services" variant="outline">
@@ -202,13 +237,54 @@ export default function CheckoutPage() {
                   <dd className="font-semibold">${estimatedTotal}</dd>
                 </div>
               </dl>
+
+              {/* Your details — always required to confirm */}
+              <div className="mt-5 flex flex-col gap-2">
+                <label htmlFor="cust-name" className="text-xs font-semibold uppercase tracking-wide text-secondary">
+                  Your details
+                </label>
+                <input
+                  id="cust-name"
+                  type="text"
+                  placeholder="Full name"
+                  value={customerName}
+                  onChange={(e) => {
+                    setCustomerName(e.target.value);
+                    setFormError("");
+                  }}
+                  autoComplete="name"
+                  className="w-full rounded-xl border divider bg-[rgb(var(--surface))] px-3.5 py-2.5 text-sm text-[rgb(var(--text-primary))] transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                />
+                <input
+                  id="cust-email"
+                  type="email"
+                  placeholder="Email address"
+                  value={customerEmail}
+                  onChange={(e) => {
+                    setCustomerEmail(e.target.value);
+                    setFormError("");
+                  }}
+                  autoComplete="email"
+                  className="w-full rounded-xl border divider bg-[rgb(var(--surface))] px-3.5 py-2.5 text-sm text-[rgb(var(--text-primary))] transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                />
+                {formError ? (
+                  <p className="text-xs font-medium text-red-500" role="alert">
+                    {formError}
+                  </p>
+                ) : null}
+              </div>
+
               <p className="mt-3 text-xs text-secondary">
                 Final pricing is confirmed after a technician reviews your
                 vehicle. No payment is taken online.
               </p>
 
-              <Button onClick={handleConfirm} className="mt-5 w-full justify-center">
-                Confirm Booking
+              <Button
+                onClick={handleConfirm}
+                disabled={submitting}
+                className="mt-5 w-full justify-center"
+              >
+                {submitting ? "Sending…" : "Confirm Booking"}
               </Button>
               <Button
                 as={Link}
@@ -222,9 +298,6 @@ export default function CheckoutPage() {
           </aside>
         </div>
       </section>
-
-      {/* Smart login intercept */}
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </>
   );
 }
