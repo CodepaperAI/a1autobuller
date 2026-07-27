@@ -5,10 +5,20 @@ import { useTheme } from "@/context/ThemeContext";
 /**
  * Footer
  * -----------------------------------------------------------------------------
- * Site footer with brand blurb, social links, top service links, local
- * landing-page links, and contact details.
+ * Site footer with brand blurb, quick links, top service links, social links,
+ * and contact details.
  */
-
+// Campaign / service landing pages
+const QUICK_LINKS = [
+  { label: "Car Dent Repair", href: "/car-dent-repair" },
+  { label: "Bumper Repair", href: "/bumper-repair" },
+  { label: "Auto Paint Repair", href: "/auto-paint-repair" },
+  { label: "FAQs", href: "/faq" },
+  { label: "Our Services", href: "/services" },
+  { label: "Book an Appointment", href: "/services" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact Us", href: "/contact" },
+];
 const SOCIAL_LINKS = [
   {
     label: "Facebook",
@@ -58,11 +68,10 @@ export default function Footer() {
   const year = new Date().getFullYear();
 const { theme, mounted } = useTheme();
   const topServices = services.slice(0, 5);
-  const topAreas = locations.slice(0, 5);
 
   return (
     <footer className="mt-24 border-t divider">
-      <div className="section grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="section grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-5">
         {/* Brand */}
         <div>
           <div className="flex items-center">
@@ -103,6 +112,25 @@ const { theme, mounted } = useTheme();
           </ul>
         </div>
 
+        {/* Quick links */}
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-wide">
+            Quick Links
+          </h3>
+
+          <ul className="mt-4 space-y-2.5 text-sm">
+            {QUICK_LINKS.map((quick) => (
+              <li key={quick.label}>
+                <Link
+                  href={quick.href}
+                  className="text-secondary transition-colors hover:text-brand-600"
+                >
+                  {quick.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         {/* Contact */}
        <div>
@@ -139,8 +167,8 @@ const { theme, mounted } = useTheme();
         <path d="M22 16.92v3a2 2 0 01-2.18 2A19.8 19.8 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72l.35 2.43a2 2 0 01-.57 1.71l-1.2 1.2a16 16 0 006.59 6.59l1.2-1.2a2 2 0 011.71-.57l2.43.35A2 2 0 0122 16.92z" />
       </svg>
 
-      <a
-        href="tel:+16044234524"
+      
+    <a    href="tel:+16044234524"
         className="transition-colors hover:text-brand-600"
       >
         604 423 4524
@@ -160,7 +188,7 @@ const { theme, mounted } = useTheme();
         <path d="M4 6l8 7 8-7" />
       </svg>
 
-      <a
+      <a 
         href="mailto:a1bullerautocollision@gmail.com"
         className="transition-colors hover:text-brand-600"
       >
@@ -194,7 +222,7 @@ const { theme, mounted } = useTheme();
 
   <div className="mt-4 space-y-3">
   {SOCIAL_LINKS.map((social) => (
-    <a
+    < a
       key={social.label}
       href={social.href}
       target="_blank"
