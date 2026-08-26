@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
  * Reusable, conversion-focused landing page shell. Pass it a `config` object
  * and it renders the hero, trust badges, benefits, and lead form. Leads post to
  * /api/contact tagged with the page slug so you can tell where they came from.
+ * A Cloudflare Turnstile check gates the submit.
  *
  * Used by: /car-dent-repair, /bumper-repair, /auto-paint-repair
  */
@@ -34,6 +35,58 @@ export default function LandingPage({ config }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+
+  const turnstileRef = useRef(null);
+  const widgetId = useRef(null);
+
+  // --- Cloudflare Turnstile ------------------------------------------------
+  // Explicit render so we can reset after a failed submit. The form unmounts on
+  // success, so we re-render if the visitor clicks "Send another".
+  useEffect(() => {
+    if (sent) {
+      widgetId.current = null; // container unmounted; allow a fresh render later
+      return;
+    }
+    let cancelled = false;
+
+    const render = () => {
+      if (cancelled || !window.turnstile || !turnstileRef.current) return;
+      if (widgetId.current !== null) return;
+      widgetId.current = window.turnstile.render(turnstileRef.current, {
+        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+        callback: (token) => setCaptchaToken(token),
+        "error-callback": () => setCaptchaToken(""),
+        "expired-callback": () => setCaptchaToken(""),
+      });
+    };
+
+    if (window.turnstile) {
+      render();
+    } else {
+      const t = setInterval(() => {
+        if (window.turnstile) {
+          clearInterval(t);
+          render();
+        }
+      }, 200);
+      return () => {
+        cancelled = true;
+        clearInterval(t);
+      };
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sent]);
+
+  const resetCaptcha = () => {
+    setCaptchaToken("");
+    if (window.turnstile && widgetId.current !== null) {
+      window.turnstile.reset(widgetId.current);
+    }
+  };
 
   const setField = (key) => (e) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
@@ -53,6 +106,10 @@ export default function LandingPage({ config }) {
     e.preventDefault();
     if (sending) return;
     if (!validate()) return;
+    if (!captchaToken) {
+      setSubmitError("Please complete the verification below.");
+      return;
+    }
 
     setSending(true);
     setSubmitError("");
@@ -74,6 +131,7 @@ export default function LandingPage({ config }) {
           phone: values.phone,
           message: `[Landing: ${config.slug}]\n\n${values.message}`,
           attachments,
+          turnstileToken: captchaToken,
         }),
       });
 
@@ -87,6 +145,7 @@ export default function LandingPage({ config }) {
       setFiles([]);
     } catch (err) {
       setSubmitError(err.message || "Something went wrong.");
+      resetCaptcha(); // token is single-use; get a fresh one for a retry
     } finally {
       setSending(false);
     }
@@ -263,6 +322,9 @@ export default function LandingPage({ config }) {
                       </p>
                     ) : null}
                   </div>
+
+                  {/* Cloudflare Turnstile */}
+                  <div ref={turnstileRef} />
 
                   {submitError ? (
                     <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm font-medium text-red-500">

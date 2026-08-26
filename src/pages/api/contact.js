@@ -8,6 +8,30 @@ export const config = {
 
 const MAX_ATTACH_MB = 10;
 
+/** Verify a Cloudflare Turnstile token server-side. Returns true if human. */
+async function verifyTurnstile(token, ip) {
+  if (!token) return false;
+  try {
+    const resp = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: token,
+          ...(ip ? { remoteip: ip } : {}),
+        }),
+      }
+    );
+    const data = await resp.json();
+    return data.success === true;
+  } catch (err) {
+    console.error("Turnstile verify error:", err);
+    return false;
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -15,10 +39,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, message, phone, attachments = [] } = req.body || {};
+    const { name, email, message, phone, attachments = [], turnstileToken } = req.body || {};
 
     if (!name || !email || !message) {
       return res.status(400).json({ error: "Name, email, and message are required." });
+    }
+
+    // Bot check — reject anything Cloudflare doesn't confirm as human.
+    const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+    const human = await verifyTurnstile(turnstileToken, ip);
+    if (!human) {
+      return res.status(403).json({ error: "Verification failed. Please try again." });
     }
 
     // attachments: [{ filename, content(base64, no data: prefix), type }]
@@ -39,7 +70,7 @@ export default async function handler(req, res) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { error } = await resend.emails.send({
-    from: `${name} (${email}) <${process.env.CONTACT_FROM_EMAIL}>`,
+      from: `${name} (${email}) <${process.env.CONTACT_FROM_EMAIL}>`,
       to: [process.env.CONTACT_TO_EMAIL],
       replyTo: email,
       subject: `New enquiry from ${name}`,

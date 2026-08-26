@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import ThemeHead from "@/components/ui/ThemeHead";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import Script from "next/script";
 
 /**
  * Unified typography framework: Plus Jakarta Sans + Inter.
@@ -31,7 +32,14 @@ export default function App({ Component, pageProps }) {
     <ThemeProvider>
       <AuthProvider>
         <CartProvider>
-         <ThemeHead />
+          <ThemeHead />
+
+          {/* Cloudflare Turnstile — loads once, available on every page.
+              Explicit render is used in the forms, so no auto-render here. */}
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            strategy="afterInteractive"
+          />
 
           {/*
             Publish the next/font variables on :root so they're available

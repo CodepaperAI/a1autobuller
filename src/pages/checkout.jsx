@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,8 +10,9 @@ import { useCart } from "@/context/CartContext";
  * -----------------------------------------------------------------------------
  * Shows every booking in the cart (service, date, time) with per-line removal
  * and an indicative total. The visitor always enters their name + email here
- * (logged in or not); "Confirm Booking" validates those, emails the booking to
- * the shop via /api/booking, clears the cart, and shows the success screen.
+ * (logged in or not); "Confirm Booking" validates those + a Cloudflare
+ * Turnstile check, emails the booking to the shop via /api/booking, clears the
+ * cart, and shows the success screen.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,17 +38,71 @@ export default function CheckoutPage() {
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const turnstileRef = useRef(null);
+  const widgetId = useRef(null);
 
   /**
-   * Confirm Booking — always require a name + valid email, then email the
-   * booking to the shop. Only clears the cart / shows success once the email
-   * request succeeds, so a booking is never silently lost.
+   * Render the Turnstile widget once the script + container are ready. We use
+   * the explicit-render API so we can reset the widget after a failed submit.
+   */
+  useEffect(() => {
+    if (confirmed) return; // widget isn't on the success screen
+    let cancelled = false;
+
+    const render = () => {
+      if (cancelled) return;
+      if (!window.turnstile || !turnstileRef.current) return;
+      if (widgetId.current !== null) return; // already rendered
+      widgetId.current = window.turnstile.render(turnstileRef.current, {
+        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+        callback: (token) => setCaptchaToken(token),
+        "error-callback": () => setCaptchaToken(""),
+        "expired-callback": () => setCaptchaToken(""),
+      });
+    };
+
+    if (window.turnstile) {
+      render();
+    } else {
+      const t = setInterval(() => {
+        if (window.turnstile) {
+          clearInterval(t);
+          render();
+        }
+      }, 200);
+      return () => {
+        cancelled = true;
+        clearInterval(t);
+      };
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [confirmed]);
+
+  const resetCaptcha = () => {
+    setCaptchaToken("");
+    if (window.turnstile && widgetId.current !== null) {
+      window.turnstile.reset(widgetId.current);
+    }
+  };
+
+  /**
+   * Confirm Booking — require a name + valid email + a Turnstile token, then
+   * email the booking to the shop. Only clears the cart / shows success once
+   * the email request succeeds, so a booking is never silently lost.
    */
   const handleConfirm = async () => {
     if (submitting) return;
 
     if (!customerName.trim() || !EMAIL_RE.test(customerEmail)) {
       setFormError("Please enter your name and a valid email address.");
+      return;
+    }
+    if (!captchaToken) {
+      setFormError("Please complete the verification below.");
       return;
     }
     setFormError("");
@@ -71,6 +126,7 @@ export default function CheckoutPage() {
             lineTotal: it.priceFrom ?? null,
           })),
           total: estimatedTotal,
+          turnstileToken: captchaToken,
         }),
       });
 
@@ -83,6 +139,7 @@ export default function CheckoutPage() {
       setConfirmed(true);
     } catch (err) {
       setFormError(err.message || "Something went wrong. Please try again.");
+      resetCaptcha(); // token is single-use; get a fresh one for a retry
     } finally {
       setSubmitting(false);
     }
@@ -174,7 +231,6 @@ export default function CheckoutPage() {
           {count} {count === 1 ? "appointment" : "appointments"} ready to
           confirm.
         </p>
-
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Line items */}
           <div className="lg:col-span-2">
@@ -220,7 +276,6 @@ export default function CheckoutPage() {
               </AnimatePresence>
             </ul>
           </div>
-
           {/* Summary / confirm */}
           <aside className="lg:col-span-1">
             <div className="surface-elevated sticky top-24 rounded-2xl p-6 shadow-panel">
@@ -267,6 +322,10 @@ export default function CheckoutPage() {
                   autoComplete="email"
                   className="w-full rounded-xl border divider bg-[rgb(var(--surface))] px-3.5 py-2.5 text-sm text-[rgb(var(--text-primary))] transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
                 />
+
+                {/* Cloudflare Turnstile */}
+                <div ref={turnstileRef} className="mt-1" />
+
                 {formError ? (
                   <p className="text-xs font-medium text-red-500" role="alert">
                     {formError}
