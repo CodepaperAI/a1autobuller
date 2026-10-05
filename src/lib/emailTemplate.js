@@ -1,3 +1,5 @@
+import { BUSINESS } from "@/data/business";
+
 /**
  * Builds the themed HTML email for a contact/booking submission.
  * Inline styles only — email clients ignore <style> and external CSS.
@@ -56,7 +58,7 @@ export function buildContactEmail({ name, email, message, phone }) {
 
       <tr>
         <td style="background:${dark};padding:18px 24px;border-top:1px solid ${border};text-align:center;">
-          <p style="margin:0;font-size:12px;color:${textMuted};">A1 Buller Auto · 7055 Buller Ave, Burnaby, BC · Sent from a1bullerautocollision.ca</p>
+          <p style="margin:0;font-size:12px;color:${textMuted};">${BUSINESS.name} · ${BUSINESS.address.street}, ${BUSINESS.address.city}, ${BUSINESS.address.region} · Sent from ${BUSINESS.siteUrl}</p>
         </td>
       </tr>
     </table>

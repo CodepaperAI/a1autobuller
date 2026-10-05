@@ -4,9 +4,9 @@
  * The "Uplift AI" SEO engine multiplies SERVICES × LOCATIONS to generate a
  * fully unique local landing page for every combination, e.g.:
  *
- *   /services/tesla-aluminum-repair/astoria
- *   /services/frame-racking/jamaica
- *   /services/uber-tlc-inspection/long-island-city
+ *   /services/tesla-aluminum-repair/burnaby
+ *   /services/frame-racking/vancouver
+ *   /services/icbc-collision-repair/new-westminster
  *
  * Each page receives custom <title>, meta description, H1 heading, and body
  * copy assembled from the dictionaries below. Keeping this in one module means
@@ -50,19 +50,19 @@ export const services = [
       `A bent frame compromises safety long after the visible damage is fixed. Drivers across ${loc} bring their vehicles to A1 Buller Auto for computerized frame racking that restores factory dimensions to the millimeter.`,
   },
   {
-    slug: "uber-inspection",
-    name: "Uber Inspection",
-    short: "NYC TLC vehicle inspection",
-    category: "Inspection & Compliance",
+    slug: "icbc-collision-repair",
+    name: "ICBC Collision Repair",
+    short: "ICBC-accredited collision repair",
+    category: "Collision & Structural",
     highlights: [
-      "Full NYC TLC diagnostic checklist",
-      "Same-day inspection slots",
-      "Fast re-inspection turnaround",
+      "ICBC Repair Network facility",
+      "Direct claim support",
+      "Documented repair process",
     ],
-    priceFrom: "$99",
-    duration: "Same day",
+    priceFrom: "Free estimate",
+    duration: "Confirmed after inspection",
     intro: (loc) =>
-      `Rideshare drivers in ${loc} can't afford downtime. Our TLC-experienced technicians run the complete Taxi & Limousine Commission checklist and get you back on the road, compliant and earning, the same day.`,
+      `Drivers from ${loc} can bring their ICBC collision claim to our Burnaby repair facility. Our team documents the damage, explains the repair plan, and helps keep the claim and repair process moving clearly.`,
   },
   {
     slug: "auto-body-repair",
@@ -157,21 +157,16 @@ export const services = [
 ];
 
 // ---------------------------------------------------------------------------
-// LOCATIONS (NYC-area neighborhoods — coherent with the TLC/Uber focus)
+// METRO VANCOUVER SERVICE AREAS
+// These are service areas, not additional shop locations. Every page clearly
+// identifies the physical repair facility at 7055 Buller Ave in Burnaby.
 // ---------------------------------------------------------------------------
 export const locations = [
-  { slug: "astoria", name: "Astoria", borough: "Queens", zip: "11102" },
-  { slug: "long-island-city", name: "Long Island City", borough: "Queens", zip: "11101" },
-  { slug: "jamaica", name: "Jamaica", borough: "Queens", zip: "11432" },
-  { slug: "flushing", name: "Flushing", borough: "Queens", zip: "11354" },
-  { slug: "jackson-heights", name: "Jackson Heights", borough: "Queens", zip: "11372" },
-  { slug: "williamsburg", name: "Williamsburg", borough: "Brooklyn", zip: "11211" },
-  { slug: "bushwick", name: "Bushwick", borough: "Brooklyn", zip: "11237" },
-  { slug: "bay-ridge", name: "Bay Ridge", borough: "Brooklyn", zip: "11209" },
-  { slug: "harlem", name: "Harlem", borough: "Manhattan", zip: "10027" },
-  { slug: "washington-heights", name: "Washington Heights", borough: "Manhattan", zip: "10033" },
-  { slug: "south-bronx", name: "South Bronx", borough: "The Bronx", zip: "10451" },
-  { slug: "fordham", name: "Fordham", borough: "The Bronx", zip: "10458" },
+  { slug: "burnaby", name: "Burnaby", region: "BC" },
+  { slug: "vancouver", name: "Vancouver", region: "BC" },
+  { slug: "new-westminster", name: "New Westminster", region: "BC" },
+  { slug: "richmond", name: "Richmond", region: "BC" },
+  { slug: "coquitlam", name: "Coquitlam", region: "BC" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -191,17 +186,18 @@ export const getAllPaths = () =>
 // These build the unique per-page title / meta / headings the crawler sees.
 // ---------------------------------------------------------------------------
 export function buildSeo(service, location) {
-  const area = `${location.name}, ${location.borough}`;
+  const area = `${location.name}, ${location.region}`;
   return {
-    title: `${service.name} in ${location.name} | A1 Buller Auto`,
-    metaDescription: `Professional ${service.short.toLowerCase()} in ${area}. A1 Buller Auto delivers certified, OEM-standard work from ${service.priceFrom}. Book online or call today.`,
-    heading: `${service.name} in ${location.name}`,
-    subheading: `Trusted ${service.category.toLowerCase()} for drivers across ${area} — from ${service.priceFrom}.`,
+    title: `${service.name} for ${location.name}, BC | A1 Buller Auto Collision`,
+    metaDescription: `${service.name} for drivers in ${area}, completed at our Burnaby collision repair facility. Request an estimate from A1 Buller Auto Collision.`,
+    heading: `${service.name} for ${location.name} drivers`,
+    subheading: `Professional ${service.category.toLowerCase()} at our Burnaby facility, serving drivers across ${area}.`,
     keywords: [
       `${service.name} ${location.name}`,
-      `${service.short} ${location.borough}`,
+      `${service.short} ${location.region}`,
       `auto repair ${location.name}`,
-      `A1 Buller Auto ${location.name}`,
+      `collision repair ${location.name}`,
+      `A1 Buller Auto Collision ${location.name}`,
     ],
     canonical: `/services/${service.slug}/${location.slug}`,
   };

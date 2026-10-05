@@ -1,5 +1,13 @@
 import { Resend } from "resend";
 import { buildBookingEmail } from "@/lib/bookingEmail";
+import { getCatalogService, TIME_SLOTS } from "@/data/servicesCatalog";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function headerSafe(value, max = 120) {
+  return String(value || "").replace(/[\r\n]+/g, " ").trim().slice(0, max);
+}
 
 /** Verify a Cloudflare Turnstile token server-side. Returns true if human. */
 async function verifyTurnstile(token, ip) {
@@ -32,10 +40,24 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { customer = {}, items = [], total, turnstileToken } = req.body || {};
+    const { customer = {}, items = [], turnstileToken } = req.body || {};
 
-    if (!Array.isArray(items) || items.length === 0) {
+    const cleanCustomer = {
+      name: headerSafe(customer.name),
+      email: headerSafe(customer.email, 254).toLowerCase(),
+      phone: headerSafe(customer.phone, 40),
+    };
+
+    if (!cleanCustomer.name || !EMAIL_RE.test(cleanCustomer.email)) {
+      return res.status(400).json({ error: "A valid customer name and email are required." });
+    }
+
+    if (!Array.isArray(items) || items.length === 0 || items.length > 20) {
       return res.status(400).json({ error: "No services in the booking." });
+    }
+
+    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FROM_EMAIL || !(process.env.BOOKING_TO_EMAIL || process.env.CONTACT_TO_EMAIL) || !process.env.TURNSTILE_SECRET_KEY) {
+      return res.status(503).json({ error: "Booking service is not configured." });
     }
 
     // Bot check — reject anything Cloudflare doesn't confirm as human.
@@ -45,24 +67,40 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: "Verification failed. Please try again." });
     }
 
-    // Compute the total on the server too, so it can't be spoofed by the client.
-    const computedTotal = items.reduce((sum, it) => {
-      const line = it.lineTotal != null ? Number(it.lineTotal) : Number(it.priceFrom) || 0;
-      return sum + (Number.isFinite(line) ? line : 0);
-    }, 0);
+    const cleanItems = items.map((item) => {
+      const catalogService = getCatalogService(item?.serviceId);
+      if (!catalogService || !DATE_RE.test(String(item?.date || "")) || !TIME_SLOTS.includes(item?.time)) {
+        return null;
+      }
+      return {
+        serviceId: catalogService.id,
+        serviceName: catalogService.name,
+        date: item.date,
+        time: item.time,
+        priceFrom: catalogService.priceFrom,
+        lineTotal: catalogService.priceFrom,
+      };
+    });
+
+    if (cleanItems.some((item) => item === null)) {
+      return res.status(400).json({ error: "One or more booking items are invalid." });
+    }
+
+    // Catalog pricing is authoritative; never trust totals sent by the browser.
+    const computedTotal = cleanItems.reduce((sum, item) => sum + item.lineTotal, 0);
 
     const resend = new Resend(process.env.RESEND_API_KEY);
     const to = process.env.BOOKING_TO_EMAIL || process.env.CONTACT_TO_EMAIL;
 
     const { error } = await resend.emails.send({
-      from: `${customer?.name} (${customer?.email}) <${process.env.CONTACT_FROM_EMAIL}>`,
+      from: `${cleanCustomer.name} <${process.env.CONTACT_FROM_EMAIL}>`,
       to: [to],
-      replyTo: customer.email || undefined,
-      subject: `New booking${customer.name ? ` from ${customer.name}` : ""} — ${items.length} service${items.length > 1 ? "s" : ""}`,
+      replyTo: cleanCustomer.email,
+      subject: `New booking from ${cleanCustomer.name} — ${cleanItems.length} service${cleanItems.length > 1 ? "s" : ""}`,
       html: buildBookingEmail({
-        customer,
-        items,
-        total: total != null ? total : computedTotal,
+        customer: cleanCustomer,
+        items: cleanItems,
+        total: computedTotal,
       }),
     });
 

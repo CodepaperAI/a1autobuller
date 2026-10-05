@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SeoHead from "@/components/seo/SeoHead";
 import { motion } from "framer-motion";
 import Card from "@/components/ui/Card";
 
@@ -51,14 +51,11 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } 
 export default function CertificationsPage() {
   return (
     <>
-      <Head>
-        <title>Certifications & Credentials | A1 Buller Auto</title>
-        <meta
-          name="description"
-          content="A1 Buller Auto holds I-CAR Gold Class, OEM collision certifications for Toyota, Kia, and Hyundai, plus aluminum and EV/Tesla-compatible repair credentials."
-        />
-        <link rel="canonical" href="https://www.a1bullerauto.com/certifications" />
-      </Head>
+      <SeoHead
+        title="Collision Repair Certifications | A1 Buller Auto Burnaby"
+        description="Learn about A1 Buller Auto Collision's repair-network, collision-repair, OEM procedure, aluminum-repair, and technician training credentials in Burnaby, BC."
+        path="/certifications"
+      />
 
       <section className="section py-20 sm:py-28">
       <div className="mx-auto max-w-3xl text-center">

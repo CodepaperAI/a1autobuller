@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
+import SeoHead from "@/components/seo/SeoHead";
+import { BUSINESS } from "@/data/business";
 
 /**
  * LandingPage  ->  src/components/sections/LandingPage.jsx
@@ -17,7 +18,7 @@ import Button from "@/components/ui/Button";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_FILES = 5;
 const MAX_FILE_MB = 10;
-const SITE = "https://www.a1bullerautocollision.com";
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -44,6 +45,7 @@ export default function LandingPage({ config }) {
   // Explicit render so we can reset after a failed submit. The form unmounts on
   // success, so we re-render if the visitor clicks "Send another".
   useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
     if (sent) {
       widgetId.current = null; // container unmounted; allow a fresh render later
       return;
@@ -54,7 +56,7 @@ export default function LandingPage({ config }) {
       if (cancelled || !window.turnstile || !turnstileRef.current) return;
       if (widgetId.current !== null) return;
       widgetId.current = window.turnstile.render(turnstileRef.current, {
-        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+        sitekey: TURNSTILE_SITE_KEY,
         callback: (token) => setCaptchaToken(token),
         "error-callback": () => setCaptchaToken(""),
         "expired-callback": () => setCaptchaToken(""),
@@ -106,6 +108,10 @@ export default function LandingPage({ config }) {
     e.preventDefault();
     if (sending) return;
     if (!validate()) return;
+    if (!TURNSTILE_SITE_KEY) {
+      setSubmitError("Online requests are temporarily unavailable. Please call us instead.");
+      return;
+    }
     if (!captchaToken) {
       setSubmitError("Please complete the verification below.");
       return;
@@ -156,11 +162,19 @@ export default function LandingPage({ config }) {
 
   return (
     <>
-      <Head>
-        <title>{`${config.heading} | A1 Buller Auto Collision`}</title>
-        <meta name="description" content={config.subheading} />
-        <link rel="canonical" href={`${SITE}/${config.slug}`} />
-      </Head>
+      <SeoHead
+        title={`${config.heading} | A1 Buller Auto Collision`}
+        description={config.subheading}
+        path={`/${config.slug}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: config.heading,
+          description: config.subheading,
+          areaServed: { "@type": "City", name: "Burnaby, BC" },
+          provider: { "@id": `${BUSINESS.siteUrl}/#business` },
+        }}
+      />
 
       <section className="section py-14 sm:py-20">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
@@ -203,8 +217,8 @@ export default function LandingPage({ config }) {
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button as="a" href="tel:+16044234524" size="lg">
-                Call (604) 423-4524
+              <Button as="a" href={`tel:${BUSINESS.phone}`} size="lg">
+                Call {BUSINESS.phoneDisplay}
               </Button>
               <span className="text-sm text-secondary">or send photos →</span>
             </div>
@@ -324,7 +338,13 @@ export default function LandingPage({ config }) {
                   </div>
 
                   {/* Cloudflare Turnstile */}
-                  <div ref={turnstileRef} />
+                  {TURNSTILE_SITE_KEY ? (
+                    <div ref={turnstileRef} />
+                  ) : (
+                    <p className="text-xs text-secondary">
+                      Online verification is unavailable. Please call {BUSINESS.phoneDisplay}.
+                    </p>
+                  )}
 
                   {submitError ? (
                     <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm font-medium text-red-500">
@@ -332,7 +352,7 @@ export default function LandingPage({ config }) {
                     </p>
                   ) : null}
 
-                  <Button type="submit" size="lg" className="w-full justify-center" disabled={sending}>
+                  <Button type="submit" size="lg" className="w-full justify-center" disabled={sending || !TURNSTILE_SITE_KEY}>
                     {sending ? "Sending…" : config.ctaLabel || "Get my free estimate"}
                   </Button>
                   <p className="text-center text-xs text-secondary">

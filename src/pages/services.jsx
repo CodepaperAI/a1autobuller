@@ -2,7 +2,7 @@
 
 
 import { useState, useCallback } from "react";
-import Head from "next/head";
+import SeoHead from "@/components/seo/SeoHead";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import ServiceDetailModal from "@/components/ui/ServiceDetailModal";
@@ -21,6 +21,7 @@ import { SERVICE_CATALOG } from "@/data/servicesCatalog";
 
 /* --- Small inline icon set (valid single-file SVGs, theme-aware) ---------- */
 const ICONS = {
+  car: "M5 17h14l-1-6-2-4H8l-2 4-1 6zM7 17v2M17 17v2M6 12h12",
   droplet: "M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z",
   disc: null, // rendered as concentric circles below
   tire: null,
@@ -154,14 +155,11 @@ export default function ServicesPage() {
 
   return (
     <>
-      <Head>
-        <title>Our Services | A1 Buller Auto</title>
-        <meta
-          name="description"
-          content="Browse A1 Buller Auto's full menu of 10 core auto services — from oil changes and brakes to diagnostics and inspections. Tap Learn More to see details and book a 30-minute time slot."
-        />
-        <link rel="canonical" href="https://www.a1bullerauto.com/services" />
-      </Head>
+      <SeoHead
+        title="Auto Body & Mechanical Services in Burnaby | A1 Buller Auto"
+        description="Explore collision repair, dent and bumper repair, refinishing, brakes, tires, alignment, diagnostics, maintenance, and inspections in Burnaby, BC."
+        path="/services"
+      />
 
       <section className="section py-14 sm:py-20">
         {/* Heading */}

@@ -19,14 +19,18 @@ npm run build
 npm run start
 ```
 
-> Requires Node.js 18.18+ (Next.js 14).
+> Requires Node.js 18.18+ (Next.js 15).
+
+Copy `.env.example` to `.env.local` and provide the Turnstile and Resend values
+before testing form delivery. `UPLIFTAI_API_TOKEN` is optional and only powers
+the remote blog feed.
 
 ## What's included
 
 - **Unified typography** — Plus Jakarta Sans (headings, `font-display` /
   `--font-jakarta`) + Inter (body, `font-sans` / `--font-inter`), both
   self-hosted via `next/font` for a consistent, layout-shift-free type system.
-- **Service catalog + cart** — `/services` lists all 10 core service categories
+- **Service catalog + cart** — `/services` lists all 11 core service categories
   with sub-items and an inline 30-minute-interval scheduler (9:00 AM–4:30 PM).
   "Add to Cart" pushes `{ serviceName, date, time }` into `CartContext`
   (persisted to `localStorage`); the navbar shows a live animated badge count.
@@ -69,7 +73,7 @@ a1bullerautocollision/
     │   └── CartContext.jsx      # booking cart (add/remove/clear) + localStorage
     ├── data/
     │   ├── seo.js               # programmatic-SEO services/locations
-    │   └── servicesCatalog.js   # the 10 core services + 30-min TIME_SLOTS
+    │   └── servicesCatalog.js   # the 11 core services + 30-min TIME_SLOTS
     ├── components/
     │   ├── ui/                  # Button, Input/Textarea, Card, ModeToggle, Modal, BookingPromptModal, AuthModal
     │   ├── layout/             # Navbar (true routes + cart badge), Footer, LayoutWrapper
@@ -106,18 +110,16 @@ dynamic route multiplies them:
 Example generated URLs:
 
 ```
-/services/tesla-aluminum-repair/astoria
-/services/frame-racking/jamaica
-/services/uber-tlc-inspection/long-island-city
+/services/tesla-aluminum-repair/burnaby
+/services/frame-racking/vancouver
+/services/icbc-collision-repair/new-westminster
 ```
 
-Add a service or a neighborhood to the dictionaries and new optimized pages are
+Add a service or a Metro Vancouver service area to the dictionaries and new optimized pages are
 minted automatically.
 
 ## Notes on the mock layer
 
-Authentication and form submission are front-end mocks for demonstration.
-Replace the bodies of `AuthContext.login/register` and the `actuallySubmit`
-handler in `ContactSection.jsx` with real API / CRM calls (or NextAuth) for
-production. All contact/booking data and uploaded files are held in component
-state only until you wire a backend.
+Authentication is a front-end convenience layer. Contact and booking forms post
+to server-side API routes, validate Cloudflare Turnstile, and send through Resend
+when the required environment variables are configured.

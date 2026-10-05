@@ -3,10 +3,15 @@ import { buildContactEmail } from "@/lib/emailTemplate";
 
 // Allow larger bodies so base64-encoded photos/PDFs fit.
 export const config = {
-  api: { bodyParser: { sizeLimit: "12mb" } },
+  api: { bodyParser: { sizeLimit: "15mb" } },
 };
 
 const MAX_ATTACH_MB = 10;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function headerSafe(value, max = 120) {
+  return String(value || "").replace(/[\r\n]+/g, " ").trim().slice(0, max);
+}
 
 /** Verify a Cloudflare Turnstile token server-side. Returns true if human. */
 async function verifyTurnstile(token, ip) {
@@ -41,8 +46,17 @@ export default async function handler(req, res) {
   try {
     const { name, email, message, phone, attachments = [], turnstileToken } = req.body || {};
 
-    if (!name || !email || !message) {
+    const cleanName = headerSafe(name);
+    const cleanEmail = headerSafe(email, 254).toLowerCase();
+    const cleanPhone = headerSafe(phone, 40);
+    const cleanMessage = String(message || "").trim().slice(0, 5000);
+
+    if (!cleanName || !EMAIL_RE.test(cleanEmail) || !cleanMessage) {
       return res.status(400).json({ error: "Name, email, and message are required." });
+    }
+
+    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FROM_EMAIL || !process.env.CONTACT_TO_EMAIL || !process.env.TURNSTILE_SECRET_KEY) {
+      return res.status(503).json({ error: "Contact service is not configured." });
     }
 
     // Bot check — reject anything Cloudflare doesn't confirm as human.
@@ -70,11 +84,11 @@ export default async function handler(req, res) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { error } = await resend.emails.send({
-      from: `${name} (${email}) <${process.env.CONTACT_FROM_EMAIL}>`,
+      from: `${cleanName} <${process.env.CONTACT_FROM_EMAIL}>`,
       to: [process.env.CONTACT_TO_EMAIL],
-      replyTo: email,
-      subject: `New enquiry from ${name}`,
-      html: buildContactEmail({ name, email, message, phone }),
+      replyTo: cleanEmail,
+      subject: `New enquiry from ${cleanName}`,
+      html: buildContactEmail({ name: cleanName, email: cleanEmail, message: cleanMessage, phone: cleanPhone }),
       attachments: files.length ? files : undefined,
     });
 

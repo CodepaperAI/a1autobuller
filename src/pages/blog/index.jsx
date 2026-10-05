@@ -1,7 +1,8 @@
-import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { listBlogs } from "@/lib/blog";
+import SeoHead from "@/components/seo/SeoHead";
 
 /**
  * /blog — Blog listing. Statically generated, revalidated hourly (ISR).
@@ -24,14 +25,11 @@ function formatDate(value) {
 export default function BlogIndex({ blogs }) {
   return (
     <>
-      <Head>
-        <title>Blog | A1 Buller Auto</title>
-        <meta
-          name="description"
-          content="Auto body, collision, and vehicle-care tips from the A1 Buller Auto team."
-        />
-        <link rel="canonical" href="https://www.a1bullerauto.com/blog" />
-      </Head>
+      <SeoHead
+        title="Auto Body & Collision Repair Blog | A1 Buller Auto"
+        description="Auto body, collision repair, insurance claim, refinishing, and vehicle-care guidance from A1 Buller Auto Collision in Burnaby, BC."
+        path="/blog"
+      />
 
       <section className="section py-14 sm:py-20">
         <div className="mx-auto max-w-2xl text-center">
@@ -72,11 +70,11 @@ export default function BlogIndex({ blogs }) {
                 <Link href={`/blog/${post.slug}`} className="group block">
                   <div className="relative aspect-[3/2] w-full overflow-hidden bg-gradient-to-br from-brand-600/20 to-metal-800/20">
                     {post.featuredImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={post.featuredImage}
                         alt={post.title}
-                        loading="lazy"
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : null}

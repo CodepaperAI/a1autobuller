@@ -2,6 +2,7 @@ import Link from "next/link";
 import { services, locations } from "@/data/seo";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
+import { BUSINESS } from "@/data/business";
 /**
  * Footer
  * -----------------------------------------------------------------------------
@@ -88,7 +89,7 @@ const { theme, mounted } = useTheme();
 </div>
 
           <p className="text-secondary mt-4 max-w-xs text-sm leading-relaxed">
-            CBC-accredited collision repairs, OEM-certified workmanship, aluminum and EV repair expertise, precision refinishing, and a lifetime warranty—all delivered with fast, reliable service.
+            ICBC collision repairs, collision-repair expertise, aluminum and EV repair capabilities, precision refinishing, and mechanical service—all delivered from our Burnaby facility.
           </p>
         </div>
 
@@ -152,7 +153,7 @@ const { theme, mounted } = useTheme();
         <circle cx="12" cy="10" r="2.5" />
       </svg>
 
-      <span>7055 Buller Ave, Burnaby, BC V5J 4S1, Canada</span>
+      <span>{BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada</span>
     </li>
 
     {/* Phone */}
@@ -168,10 +169,10 @@ const { theme, mounted } = useTheme();
       </svg>
 
       
-    <a    href="tel:+16044234524"
+    <a href={`tel:${BUSINESS.phone}`}
         className="transition-colors hover:text-brand-600"
       >
-        604 423 4524
+        {BUSINESS.phoneDisplay}
       </a>
     </li>
 
@@ -189,10 +190,10 @@ const { theme, mounted } = useTheme();
       </svg>
 
       <a 
-        href="mailto:a1bullerautocollision@gmail.com"
+        href={`mailto:${BUSINESS.email}`}
         className="transition-colors hover:text-brand-600"
       >
-        a1bullerautocollision@gmail.com
+        {BUSINESS.email}
       </a>
     </li>
 
@@ -209,7 +210,7 @@ const { theme, mounted } = useTheme();
         <path d="M12 7v5l3 3" />
       </svg>
 
-      <span>Mon – Sat: 9:00 AM – 6:00 PM</span>
+      <span>{BUSINESS.hoursDisplay}</span>
     </li>
   </ul>
 </div>
@@ -222,7 +223,7 @@ const { theme, mounted } = useTheme();
 
   <div className="mt-4 space-y-3">
   {SOCIAL_LINKS.map((social) => (
-    < a
+    <a
       key={social.label}
       href={social.href}
       target="_blank"
@@ -245,7 +246,7 @@ const { theme, mounted } = useTheme();
 
   {/* WhatsApp */}
   <a
-    href="https://wa.me/16044455057"
+    href={`https://wa.me/${BUSINESS.phone.replace(/\D/g, "")}`}
     target="_blank"
     rel="noopener noreferrer"
     aria-label="WhatsApp"
@@ -264,7 +265,7 @@ const { theme, mounted } = useTheme();
 
     <div>
       <p className="font-medium">WhatsApp</p>
-      <p className="text-xs text-secondary">+1 (604) 445-5057</p>
+      <p className="text-xs text-secondary">{BUSINESS.phoneDisplay}</p>
     </div>
   </a>
 </div>

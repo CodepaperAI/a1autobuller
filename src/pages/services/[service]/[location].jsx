@@ -1,11 +1,12 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useCallback } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import SeoHead from "@/components/seo/SeoHead";
 import { useAuth } from "@/context/AuthContext";
+import { BUSINESS } from "@/data/business";
 import {
   getService,
   getLocation,
@@ -48,7 +49,7 @@ export async function getStaticProps({ params }) {
   const seo = buildSeo(service, location);
 
   const relatedLocations = locations
-    .filter((l) => l.slug !== location.slug && l.borough === location.borough)
+    .filter((l) => l.slug !== location.slug)
     .slice(0, 3);
 
   const relatedServices = services
@@ -106,46 +107,42 @@ export default function LocalServicePage({
     return <div className="section py-32 text-center text-secondary">Loading…</div>;
   }
 
-  const area = `${location.name}, ${location.borough}`;
+  const area = `${location.name}, ${location.region}`;
 
-  // JSON-LD structured data for local search rich results.
-  const jsonLd = {
+  const serviceSchema = {
     "@context": "https://schema.org",
-    "@type": "AutoRepair",
-    name: "A1 Buller Auto",
+    "@type": "Service",
+    name: service.name,
     description: seo.metaDescription,
-    areaServed: area,
-    telephone: "+1-718-56044455057",
-    priceRange: service.priceFrom + "+",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: location.name,
-      addressRegion: "NY",
-      postalCode: location.zip,
-      addressCountry: "US",
+    url: `${BUSINESS.siteUrl}${seo.canonical}`,
+    areaServed: {
+      "@type": "City",
+      name: area,
     },
-    makesOffer: {
-      "@type": "Offer",
-      itemOffered: { "@type": "Service", name: service.name },
+    provider: {
+      "@id": `${BUSINESS.siteUrl}/#business`,
     },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: BUSINESS.siteUrl },
+      { "@type": "ListItem", position: 2, name: "Services", item: `${BUSINESS.siteUrl}/services` },
+      { "@type": "ListItem", position: 3, name: `${service.name} for ${location.name}` },
+    ],
   };
 
   return (
     <>
-      <Head>
-        <title>{seo.title}</title>
-        <meta name="description" content={seo.metaDescription} />
-        <meta name="keywords" content={seo.keywords.join(", ")} />
-        <meta property="og:title" content={seo.title} />
-        <meta property="og:description" content={seo.metaDescription} />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href={`https://www.a1bullerauto.com${seo.canonical}`} />
-        {/* Structured data for local SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
+      <SeoHead
+        title={seo.title}
+        description={seo.metaDescription}
+        path={seo.canonical}
+        keywords={seo.keywords}
+        jsonLd={[serviceSchema, breadcrumbSchema]}
+      />
 
       {/* Hero band */}
       <section className="relative overflow-hidden border-b divider">
@@ -182,8 +179,8 @@ export default function LocalServicePage({
               <Button size="lg" onClick={handleBook}>
                 Book {service.name} in {location.name}
               </Button>
-              <Button size="lg" variant="secondary" as="a" href="tel:+17185550142">
-                Call (604)445-5057
+              <Button size="lg" variant="secondary" as="a" href={`tel:${BUSINESS.phone}`}>
+                Call {BUSINESS.phoneDisplay}
               </Button>
             </div>
           </motion.div>
@@ -231,10 +228,10 @@ export default function LocalServicePage({
             {service.name} near {area}
           </h2>
           <p className="text-secondary mt-3 leading-relaxed">
-            Conveniently located for {area} and surrounding neighborhoods, our shop
-            combines certified technicians, OEM-standard parts, and a lifetime
-            workmanship warranty. Typical turnaround for this service is{" "}
-            <strong>{service.duration}</strong>, and estimates are always free.
+            Our repair facility is at {BUSINESS.address.street} in {BUSINESS.address.city}, convenient for
+            drivers from {area} and surrounding communities. We use documented
+            repair procedures and provide a clear estimate before work begins.
+            Typical turnaround for this service is <strong>{service.duration}</strong>.
           </p>
         </div>
 
@@ -244,7 +241,9 @@ export default function LocalServicePage({
             <h3 className="text-sm font-semibold uppercase tracking-wide">At a glance</h3>
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex items-center justify-between">
-                <dt className="text-secondary">Starting price</dt>
+                <dt className="text-secondary">
+                  {service.priceFrom === "Free estimate" ? "Estimate" : "Starting price"}
+                </dt>
                 <dd className="font-semibold">{service.priceFrom}</dd>
               </div>
               <div className="flex items-center justify-between">

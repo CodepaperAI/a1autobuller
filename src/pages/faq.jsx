@@ -1,9 +1,10 @@
-import Head from "next/head";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import FaqSection from "@/components/sections/FaqSection";
+import SeoHead from "@/components/seo/SeoHead";
 import { FAQS, FAQ_GROUPS, faqsByGroup, buildFaqJsonLd } from "@/data/faqs";
+import { BUSINESS } from "@/data/business";
 
 /**
  * /faq — Answer hub
@@ -17,18 +18,12 @@ export default function FaqPage() {
 
   return (
     <>
-      <Head>
-        <title>Collision Repair &amp; Insurance Claim FAQs | A1 Buller Auto Collision</title>
-        <meta
-          name="description"
-          content="Straight answers on auto insurance claims in Canada, frame and structural damage, total-loss decisions, and what I-CAR Gold Class certification actually means."
-        />
-        <link rel="canonical" href="https://www.a1bullerautocollision.com/faq" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
+      <SeoHead
+        title="Collision Repair & Insurance Claim FAQs | A1 Buller Auto"
+        description="Answers about ICBC and auto insurance claims, frame damage, total-loss decisions, and collision repair standards from a Burnaby repair shop."
+        path="/faq"
+        jsonLd={jsonLd}
+      />
 
       <section className="section pt-14 sm:pt-20">
         <div className="mx-auto max-w-3xl">
@@ -84,8 +79,8 @@ export default function FaqPage() {
             <Button as={Link} href="/contact" size="lg">
               Get a free estimate
             </Button>
-            <Button as="a" href="tel:+16044234524" variant="outline" size="lg">
-              Call (604) 423-4524
+            <Button as="a" href={`tel:${BUSINESS.phone}`} variant="outline" size="lg">
+              Call {BUSINESS.phoneDisplay}
             </Button>
           </div>
         </div>

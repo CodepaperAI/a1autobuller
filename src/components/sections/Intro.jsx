@@ -38,8 +38,8 @@ const CAPABILITIES = [
     body: "New tire sales, road-force balancing, rotations, and fast flat repairs to keep you rolling.",
   },
   {
-    title: "Uber Inspection",
-    body: "Same-day Taxi & Limousine Commission inspections so rideshare drivers stay compliant and earning.",
+    title: "ICBC Collision Repair",
+    body: "Accredited collision repair and claim support with a documented repair plan and clear updates.",
   },
 ];
 

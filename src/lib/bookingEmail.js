@@ -1,3 +1,5 @@
+import { BUSINESS } from "@/data/business";
+
 /**
  * Themed HTML email summarizing a booking. Separate from the contact template
  * so the two flows never get confused. Inline styles only (email clients).
@@ -79,7 +81,7 @@ export function buildBookingEmail({ customer, items, total }) {
 
       <tr>
         <td style="padding:16px 24px;border-top:1px solid ${border};text-align:center;">
-          <p style="margin:0;font-size:12px;color:${textMuted};">Prices are estimates confirmed on inspection · A1 Buller Auto, 7055 Buller Ave, Burnaby, BC</p>
+          <p style="margin:0;font-size:12px;color:${textMuted};">Prices are estimates confirmed on inspection · ${BUSINESS.name}, ${BUSINESS.address.street}, ${BUSINESS.address.city}, ${BUSINESS.address.region}</p>
         </td>
       </tr>
     </table>

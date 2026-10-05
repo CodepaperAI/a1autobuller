@@ -4,7 +4,7 @@
  * Single source of truth for the customer-facing service catalog and the
  * booking scheduler's time options.
  *
- * `SERVICE_CATALOG` — the exact 10 core auto service categories (with their
+ * `SERVICE_CATALOG` — the 11 core auto service categories (with their
  * sub-items) rendered on /services. Each entry also carries light presentation
  * metadata (icon key, priceFrom, duration) used by the catalog cards.
  *
@@ -15,7 +15,7 @@
  * marketing/pSEO engine and the transactional catalog can evolve independently.
  */
 
-/** The 10 core service categories, in the exact order specified. */
+/** The 11 core service categories, in the display order used on /services. */
 export const SERVICE_CATALOG = [
   {
   id: "auto-body-repair",
@@ -65,7 +65,8 @@ export const SERVICE_CATALOG = [
   },
   {
     id: "tire-wheel",
-    name: " Wheel Services & Alignments",
+    name: "Tire & Wheel Services",
+    image: "/Tire & Wheel Services.png",
     icon: "tire",
     priceFrom: 25,
     duration: "30–60 min",

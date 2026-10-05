@@ -1,7 +1,9 @@
-import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { listBlogs, getBlog } from "@/lib/blog";
+import SeoHead from "@/components/seo/SeoHead";
+import { absoluteUrl, BUSINESS } from "@/data/business";
 
 /**
  * /blog/[slug] — Single blog post. Pre-renders known slugs, and uses
@@ -28,22 +30,33 @@ function formatDate(value) {
 
 export default function BlogPost({ blog }) {
   const meta = blog.meta || {};
-  const canonical = meta.ogUrl || `https://www.a1bullerauto.com/blog/${blog.slug}`;
+  const path = `/blog/${blog.slug}`;
+  const title = meta.seoTitle || `${blog.title} | A1 Buller Auto`;
+  const description = meta.seoDescription || blog.excerpt || "";
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    description,
+    url: absoluteUrl(path),
+    image: blog.featuredImage || absoluteUrl("/logo-light.png"),
+    datePublished: blog.publishDate || undefined,
+    dateModified: blog.updatedAt || blog.publishDate || undefined,
+    author: blog.authorName ? { "@type": "Person", name: blog.authorName } : { "@type": "Organization", name: BUSINESS.name },
+    publisher: { "@id": `${BUSINESS.siteUrl}/#business` },
+  };
 
   return (
     <>
-      <Head>
-        <title>{meta.seoTitle || `${blog.title} | A1 Buller Auto`}</title>
-        <meta name="description" content={meta.seoDescription || blog.excerpt || ""} />
-        {Array.isArray(meta.keywords) && meta.keywords.length ? (
-          <meta name="keywords" content={meta.keywords.join(", ")} />
-        ) : null}
-        <meta property="og:title" content={meta.ogTitle || blog.title} />
-        <meta property="og:description" content={meta.ogDescription || blog.excerpt || ""} />
-        <meta property="og:type" content={meta.ogType || "article"} />
-        {blog.featuredImage ? <meta property="og:image" content={blog.featuredImage} /> : null}
-        <link rel="canonical" href={canonical} />
-      </Head>
+      <SeoHead
+        title={title}
+        description={description}
+        path={path}
+        type="article"
+        image={blog.featuredImage || undefined}
+        keywords={meta.keywords}
+        jsonLd={articleSchema}
+      />
 
       <article className="section py-14 sm:py-20">
         <div className="mx-auto max-w-3xl">
@@ -88,10 +101,12 @@ export default function BlogPost({ blog }) {
 
           {blog.featuredImage ? (
             <div className="relative mt-8 aspect-[3/2] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600/20 to-metal-800/20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={blog.featuredImage}
                 alt={blog.title}
+                fill
+                sizes="(min-width: 768px) 768px, 100vw"
+                priority
                 className="h-full w-full object-cover"
               />
             </div>

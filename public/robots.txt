@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://www.a1bullerautocollision.com/sitemap.xml
+Host: https://www.a1bullerautocollision.com

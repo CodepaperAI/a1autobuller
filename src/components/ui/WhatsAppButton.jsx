@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BUSINESS } from "@/data/business";
 
 /**
  * WhatsAppButton  ->  src/components/ui/WhatsAppButton.jsx
@@ -16,7 +17,7 @@ import Link from "next/link";
  * "phone number is not on WhatsApp".
  */
 
- const PHONE = "16044455057"; // (604)445-5057, digits only + country code
+const PHONE = BUSINESS.phone.replace(/\D/g, "");
 const MESSAGE = "Hello, I want your A1 Auto Buller services.";
 
 // https://wa.me/16044234524?text=<url-encoded message>

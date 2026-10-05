@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/context/CartContext";
 import { TIME_SLOTS } from "@/data/servicesCatalog";
@@ -174,11 +175,12 @@ export default function ServiceDetailModal({ service, open, onClose }) {
                   aria-label="Enlarge image"
                   className="group relative aspect-[3/2] w-full cursor-zoom-in overflow-hidden rounded-xl bg-gradient-to-br from-brand-600/20 to-metal-800/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
                 >
-                  <img
+                  <Image
                     src={imageSrc}
                     alt={service.name || service.title}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="eager"
                   />
                   {/* Hover hint */}
                   <span className="pointer-events-none absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">

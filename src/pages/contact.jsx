@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SeoHead from "@/components/seo/SeoHead";
 import { motion } from "framer-motion";
 import ContactSection from "@/components/sections/ContactSection";
 
@@ -12,14 +12,11 @@ import ContactSection from "@/components/sections/ContactSection";
 export default function ContactPage() {
   return (
     <>
-      <Head>
-        <title>Contact Us | A1 Buller Auto</title>
-        <meta
-          name="description"
-          content="Get in touch with A1 Buller Auto. Send us a message, attach photos of your vehicle, and we'll get right back to you."
-        />
-        <link rel="canonical" href="https://www.a1bullerauto.com/contact" />
-      </Head>
+      <SeoHead
+        title="Contact A1 Buller Auto Collision | Burnaby, BC"
+        description="Contact A1 Buller Auto Collision in Burnaby for a repair estimate. Send details and vehicle photos, call (604) 423-4524, or visit 7055 Buller Ave."
+        path="/contact"
+      />
 
       <section className="section pt-14 sm:pt-20">
         <div className="mx-auto max-w-2xl text-center">

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input, Textarea } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { BUSINESS } from "@/data/business";
 
 /**
  * ContactSection
@@ -18,6 +19,7 @@ import Button from "@/components/ui/Button";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_FILES = 5;
 const MAX_FILE_MB = 10;
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 /** Read a File as base64 (strips the "data:*;base64," prefix). */
 function fileToBase64(file) {
@@ -54,6 +56,7 @@ export default function ContactSection() {
   // submit. The form (and this container) unmounts on success, so we re-render
   // if the visitor chooses "Send another request".
   useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
     if (submitted) {
       widgetId.current = null; // container unmounted; allow a fresh render later
       return;
@@ -64,7 +67,7 @@ export default function ContactSection() {
       if (cancelled || !window.turnstile || !turnstileRef.current) return;
       if (widgetId.current !== null) return;
       widgetId.current = window.turnstile.render(turnstileRef.current, {
-        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+        sitekey: TURNSTILE_SITE_KEY,
         callback: (token) => setCaptchaToken(token),
         "error-callback": () => setCaptchaToken(""),
         "expired-callback": () => setCaptchaToken(""),
@@ -189,6 +192,10 @@ export default function ContactSection() {
     (e) => {
       e.preventDefault();
       if (!validate()) return;
+      if (!TURNSTILE_SITE_KEY) {
+        setSubmitError("Online requests are temporarily unavailable. Please call us instead.");
+        return;
+      }
       if (!captchaToken) {
         setSubmitError("Please complete the verification below.");
         return;
@@ -226,17 +233,17 @@ export default function ContactSection() {
           <div className="mt-8 space-y-4 text-sm">
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📍</span>
-              <span>7055 Buller Ave, Burnaby, BC V5J 4S1, Canada</span>
+              <span>{BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📞</span>
-              <a href="tel:+16044234524" className="transition-colors hover:text-brand-600">
-                (604)423-4524
+              <a href={`tel:${BUSINESS.phone}`} className="transition-colors hover:text-brand-600">
+                {BUSINESS.phoneDisplay}
               </a>
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">🕒</span>
-              <span>Mon–Sat: 9:00 AM – 6:00 PM</span>
+              <span>{BUSINESS.hoursDisplay}</span>
             </div>
           </div>
         </div>
@@ -401,7 +408,13 @@ export default function ContactSection() {
                 </div>
 
                 {/* Cloudflare Turnstile */}
-                <div ref={turnstileRef} />
+                {TURNSTILE_SITE_KEY ? (
+                  <div ref={turnstileRef} />
+                ) : (
+                  <p className="text-xs text-secondary">
+                    Online verification is unavailable. Please call {BUSINESS.phoneDisplay}.
+                  </p>
+                )}
 
                 {submitError ? (
                   <p role="alert" className="text-xs font-medium text-red-500">
@@ -409,7 +422,7 @@ export default function ContactSection() {
                   </p>
                 ) : null}
 
-                <Button type="submit" size="lg" className="w-full" disabled={sending}>
+                <Button type="submit" size="lg" className="w-full" disabled={sending || !TURNSTILE_SITE_KEY}>
                   {sending ? "Submitting…" : "Submit request"}
                 </Button>
               </motion.form>

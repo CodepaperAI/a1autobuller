@@ -83,7 +83,10 @@ export default function Hero() {
             variants={item}
             className="text-secondary mx-auto mt-6 max-w-2xl text-lg leading-relaxed"
           >
-            From aluminum and EV structural repairs to precision frame racking and refinishing, A1 Buller Auto delivers OEM-standard results. As an ICBC Repair Network Facility and Nissan Certified shop, our work is backed by a lifetime warranty. We even offer same-day service and complimentary.
+            From aluminum and EV structural repairs to precision frame racking
+            and refinishing, A1 Buller Auto Collision provides complete collision
+            and mechanical service from our Burnaby facility. Request a free
+            estimate and send photos of the damage online.
           </motion.p>
 
           {/* CTAs */}

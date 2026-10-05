@@ -5,17 +5,21 @@
 const BASE = "https://api.upliftai.co/api/public/v1";
 
 function getToken() {
-  const token = process.env.UPLIFTAI_API_TOKEN;
-  if (!token) throw new Error("Missing UPLIFTAI_API_TOKEN env var");
-  return token;
+  return process.env.UPLIFTAI_API_TOKEN || null;
 }
 
 /** Fetch a page of blog summaries. Returns { blogs, pagination }. */
 export async function listBlogs({ page = 1, limit = 12, status = "PUBLISH" } = {}) {
+  const token = getToken();
+  if (!token) return { blogs: [], pagination: { page, limit, total: 0, totalPages: 0 } };
+
   const url = `${BASE}/blogs?page=${page}&limit=${limit}&status=${status}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${getToken()}` },
-  });
+  let res;
+  try {
+    res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  } catch {
+    return { blogs: [], pagination: { page, limit, total: 0, totalPages: 0 } };
+  }
 
   if (!res.ok) {
     // Surface a clean empty state rather than crashing the build.
@@ -29,10 +33,16 @@ export async function listBlogs({ page = 1, limit = 12, status = "PUBLISH" } = {
 
 /** Fetch a single blog by slug. Returns the blog object or null. */
 export async function getBlog(slug) {
+  const token = getToken();
+  if (!token) return null;
+
   const url = `${BASE}/blog/${encodeURIComponent(slug)}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${getToken()}` },
-  });
+  let res;
+  try {
+    res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  } catch {
+    return null;
+  }
 
   if (!res.ok) return null;
   const json = await res.json();

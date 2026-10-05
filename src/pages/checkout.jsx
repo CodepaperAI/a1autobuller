@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/context/CartContext";
+import { BUSINESS } from "@/data/business";
 
 /**
  * /checkout — Booking review + finalization
@@ -16,6 +17,7 @@ import { useCart } from "@/context/CartContext";
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 /** Pretty-print an ISO date (YYYY-MM-DD) as e.g. "Mon, Jul 7, 2026". */
 function formatDate(iso) {
@@ -47,6 +49,7 @@ export default function CheckoutPage() {
    * the explicit-render API so we can reset the widget after a failed submit.
    */
   useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
     if (confirmed) return; // widget isn't on the success screen
     let cancelled = false;
 
@@ -55,7 +58,7 @@ export default function CheckoutPage() {
       if (!window.turnstile || !turnstileRef.current) return;
       if (widgetId.current !== null) return; // already rendered
       widgetId.current = window.turnstile.render(turnstileRef.current, {
-        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+        sitekey: TURNSTILE_SITE_KEY,
         callback: (token) => setCaptchaToken(token),
         "error-callback": () => setCaptchaToken(""),
         "expired-callback": () => setCaptchaToken(""),
@@ -99,6 +102,10 @@ export default function CheckoutPage() {
 
     if (!customerName.trim() || !EMAIL_RE.test(customerEmail)) {
       setFormError("Please enter your name and a valid email address.");
+      return;
+    }
+    if (!TURNSTILE_SITE_KEY) {
+      setFormError("Online booking is temporarily unavailable. Please call us instead.");
       return;
     }
     if (!captchaToken) {
@@ -324,7 +331,13 @@ export default function CheckoutPage() {
                 />
 
                 {/* Cloudflare Turnstile */}
-                <div ref={turnstileRef} className="mt-1" />
+                {TURNSTILE_SITE_KEY ? (
+                  <div ref={turnstileRef} className="mt-1" />
+                ) : (
+                  <p className="mt-1 text-xs text-secondary">
+                    Online verification is unavailable. Please call {BUSINESS.phoneDisplay}.
+                  </p>
+                )}
 
                 {formError ? (
                   <p className="text-xs font-medium text-red-500" role="alert">
@@ -340,7 +353,7 @@ export default function CheckoutPage() {
 
               <Button
                 onClick={handleConfirm}
-                disabled={submitting}
+                disabled={submitting || !TURNSTILE_SITE_KEY}
                 className="mt-5 w-full justify-center"
               >
                 {submitting ? "Sending…" : "Confirm Booking"}

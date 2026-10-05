@@ -36,10 +36,12 @@ export default function App({ Component, pageProps }) {
 
           {/* Cloudflare Turnstile — loads once, available on every page.
               Explicit render is used in the forms, so no auto-render here. */}
-          <Script
-            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-            strategy="afterInteractive"
-          />
+          {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? (
+            <Script
+              src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+              strategy="afterInteractive"
+            />
+          ) : null}
 
           {/*
             Publish the next/font variables on :root so they're available

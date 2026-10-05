@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
+import { BUSINESS } from "@/data/business";
 
 
 const NAV_LINKS = [
@@ -144,7 +145,7 @@ const { theme, mounted: themeMounted } = useTheme();
             </motion.div>
 
             <div className="mt-auto flex flex-col gap-3 pt-6">
-              <Button as="a" href="tel:+16044455057">
+              <Button as="a" href={`tel:${BUSINESS.phone}`}>
                 Call Now
               </Button>
 
@@ -230,7 +231,7 @@ const { theme, mounted: themeMounted } = useTheme();
               </Button>
             )}
 
-            <Button size="sm" as="a" href="tel:+16044455057">
+            <Button size="sm" as="a" href={`tel:${BUSINESS.phone}`}>
               Call Now
             </Button>
 
