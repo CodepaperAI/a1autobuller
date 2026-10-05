@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import SeoHead from "@/components/seo/SeoHead";
@@ -10,7 +10,6 @@ import { BUSINESS } from "@/data/business";
  * Reusable, conversion-focused landing page shell. Pass it a `config` object
  * and it renders the hero, trust badges, benefits, and lead form. Leads post to
  * /api/contact tagged with the page slug so you can tell where they came from.
- * A Cloudflare Turnstile check gates the submit.
  *
  * Used by: /car-dent-repair, /bumper-repair, /auto-paint-repair
  */
@@ -18,7 +17,6 @@ import { BUSINESS } from "@/data/business";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_FILES = 5;
 const MAX_FILE_MB = 10;
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -30,66 +28,12 @@ function fileToBase64(file) {
 }
 
 export default function LandingPage({ config }) {
-  const [values, setValues] = useState({ name: "", email: "", phone: "", message: "" });
+  const [values, setValues] = useState({ name: "", email: "", phone: "", message: "", website: "" });
   const [files, setFiles] = useState([]);
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [captchaToken, setCaptchaToken] = useState("");
-
-  const turnstileRef = useRef(null);
-  const widgetId = useRef(null);
-
-  // --- Cloudflare Turnstile ------------------------------------------------
-  // Explicit render so we can reset after a failed submit. The form unmounts on
-  // success, so we re-render if the visitor clicks "Send another".
-  useEffect(() => {
-    if (!TURNSTILE_SITE_KEY) return;
-    if (sent) {
-      widgetId.current = null; // container unmounted; allow a fresh render later
-      return;
-    }
-    let cancelled = false;
-
-    const render = () => {
-      if (cancelled || !window.turnstile || !turnstileRef.current) return;
-      if (widgetId.current !== null) return;
-      widgetId.current = window.turnstile.render(turnstileRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
-        callback: (token) => setCaptchaToken(token),
-        "error-callback": () => setCaptchaToken(""),
-        "expired-callback": () => setCaptchaToken(""),
-      });
-    };
-
-    if (window.turnstile) {
-      render();
-    } else {
-      const t = setInterval(() => {
-        if (window.turnstile) {
-          clearInterval(t);
-          render();
-        }
-      }, 200);
-      return () => {
-        cancelled = true;
-        clearInterval(t);
-      };
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [sent]);
-
-  const resetCaptcha = () => {
-    setCaptchaToken("");
-    if (window.turnstile && widgetId.current !== null) {
-      window.turnstile.reset(widgetId.current);
-    }
-  };
-
   const setField = (key) => (e) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
@@ -108,15 +52,6 @@ export default function LandingPage({ config }) {
     e.preventDefault();
     if (sending) return;
     if (!validate()) return;
-    if (!TURNSTILE_SITE_KEY) {
-      setSubmitError("Online requests are temporarily unavailable. Please call us instead.");
-      return;
-    }
-    if (!captchaToken) {
-      setSubmitError("Please complete the verification below.");
-      return;
-    }
-
     setSending(true);
     setSubmitError("");
     try {
@@ -135,9 +70,9 @@ export default function LandingPage({ config }) {
           name: values.name,
           email: values.email,
           phone: values.phone,
+          website: values.website,
           message: `[Landing: ${config.slug}]\n\n${values.message}`,
           attachments,
-          turnstileToken: captchaToken,
         }),
       });
 
@@ -147,11 +82,10 @@ export default function LandingPage({ config }) {
       }
 
       setSent(true);
-      setValues({ name: "", email: "", phone: "", message: "" });
+      setValues({ name: "", email: "", phone: "", message: "", website: "" });
       setFiles([]);
     } catch (err) {
       setSubmitError(err.message || "Something went wrong.");
-      resetCaptcha(); // token is single-use; get a fresh one for a retry
     } finally {
       setSending(false);
     }
@@ -313,6 +247,17 @@ export default function LandingPage({ config }) {
                     {errors.message ? <p className="mt-1 text-xs font-medium text-red-500">{errors.message}</p> : null}
                   </div>
 
+                  <input
+                    type="text"
+                    name="website"
+                    value={values.website}
+                    onChange={setField("website")}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    className="hidden"
+                    aria-hidden="true"
+                  />
+
                   <div>
                     <label htmlFor="l-files" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-secondary">
                       Photos of the damage <span className="normal-case text-secondary/70">(up to {MAX_FILES})</span>
@@ -337,22 +282,13 @@ export default function LandingPage({ config }) {
                     ) : null}
                   </div>
 
-                  {/* Cloudflare Turnstile */}
-                  {TURNSTILE_SITE_KEY ? (
-                    <div ref={turnstileRef} />
-                  ) : (
-                    <p className="text-xs text-secondary">
-                      Online verification is unavailable. Please call {BUSINESS.phoneDisplay}.
-                    </p>
-                  )}
-
                   {submitError ? (
                     <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm font-medium text-red-500">
                       {submitError}
                     </p>
                   ) : null}
 
-                  <Button type="submit" size="lg" className="w-full justify-center" disabled={sending || !TURNSTILE_SITE_KEY}>
+                  <Button type="submit" size="lg" className="w-full justify-center" disabled={sending}>
                     {sending ? "Sending…" : config.ctaLabel || "Get my free estimate"}
                   </Button>
                   <p className="text-center text-xs text-secondary">

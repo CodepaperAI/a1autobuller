@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input, Textarea } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -9,8 +9,7 @@ import { BUSINESS } from "@/data/business";
  * -----------------------------------------------------------------------------
  * The embedded lead-capture / booking form. Fields: Full Name, Email, Message,
  * plus a drag-and-drop (or click) upload area for photos of vehicle damage.
- * Includes client-side validation, a Cloudflare Turnstile check, and an
- * animated success state.
+ * Includes client-side validation and an animated success state.
  *
  * Submitting posts straight to /api/contact (which emails the shop via Resend).
  * No login step — anyone can send.
@@ -19,7 +18,6 @@ import { BUSINESS } from "@/data/business";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_FILES = 5;
 const MAX_FILE_MB = 10;
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 /** Read a File as base64 (strips the "data:*;base64," prefix). */
 function fileToBase64(file) {
@@ -33,8 +31,7 @@ function fileToBase64(file) {
 
 export default function ContactSection() {
   const fileInputRef = useRef(null);
-  const [captchaToken, setCaptchaToken] = useState("");
-  const [values, setValues] = useState({ name: "", email: "", message: "" });
+  const [values, setValues] = useState({ name: "", email: "", message: "", website: "" });
   const [errors, setErrors] = useState({});
   const [files, setFiles] = useState([]);
   const [fileError, setFileError] = useState("");
@@ -43,62 +40,10 @@ export default function ContactSection() {
   const [sending, setSending] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  const turnstileRef = useRef(null);
-  const widgetId = useRef(null);
 
   const setField = (key) => (e) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
-  };
-
-  // --- Cloudflare Turnstile ------------------------------------------------
-  // Render the widget with the explicit API so we can reset it after a failed
-  // submit. The form (and this container) unmounts on success, so we re-render
-  // if the visitor chooses "Send another request".
-  useEffect(() => {
-    if (!TURNSTILE_SITE_KEY) return;
-    if (submitted) {
-      widgetId.current = null; // container unmounted; allow a fresh render later
-      return;
-    }
-    let cancelled = false;
-
-    const render = () => {
-      if (cancelled || !window.turnstile || !turnstileRef.current) return;
-      if (widgetId.current !== null) return;
-      widgetId.current = window.turnstile.render(turnstileRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
-        callback: (token) => setCaptchaToken(token),
-        "error-callback": () => setCaptchaToken(""),
-        "expired-callback": () => setCaptchaToken(""),
-      });
-    };
-
-    if (window.turnstile) {
-      render();
-    } else {
-      const t = setInterval(() => {
-        if (window.turnstile) {
-          clearInterval(t);
-          render();
-        }
-      }, 200);
-      return () => {
-        cancelled = true;
-        clearInterval(t);
-      };
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [submitted]);
-
-  const resetCaptcha = () => {
-    setCaptchaToken("");
-    if (window.turnstile && widgetId.current !== null) {
-      window.turnstile.reset(widgetId.current);
-    }
   };
 
   // --- Validation ----------------------------------------------------------
@@ -167,8 +112,8 @@ export default function ContactSection() {
           name: values.name,
           email: values.email,
           message: values.message,
+          website: values.website,
           attachments,
-          turnstileToken: captchaToken,
         }),
       });
 
@@ -178,31 +123,22 @@ export default function ContactSection() {
       }
 
       setSubmitted(true);
-      setValues({ name: "", email: "", message: "" });
+      setValues({ name: "", email: "", message: "", website: "" });
       setFiles([]);
     } catch (err) {
       setSubmitError(err.message || "Something went wrong. Please try again.");
-      resetCaptcha(); // token is single-use; get a fresh one for a retry
     } finally {
       setSending(false);
     }
-  }, [files, values, captchaToken]);
+  }, [files, values]);
 
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
       if (!validate()) return;
-      if (!TURNSTILE_SITE_KEY) {
-        setSubmitError("Online requests are temporarily unavailable. Please call us instead.");
-        return;
-      }
-      if (!captchaToken) {
-        setSubmitError("Please complete the verification below.");
-        return;
-      }
       actuallySubmit();
     },
-    [validate, actuallySubmit, captchaToken]
+    [validate, actuallySubmit]
   );
 
   return (
@@ -321,6 +257,16 @@ export default function ContactSection() {
                   onChange={setField("message")}
                   error={errors.message}
                 />
+                <input
+                  type="text"
+                  name="website"
+                  value={values.website}
+                  onChange={setField("website")}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="hidden"
+                  aria-hidden="true"
+                />
 
                 {/* Drag-and-drop / click upload */}
                 <div>
@@ -407,22 +353,13 @@ export default function ContactSection() {
                   </AnimatePresence>
                 </div>
 
-                {/* Cloudflare Turnstile */}
-                {TURNSTILE_SITE_KEY ? (
-                  <div ref={turnstileRef} />
-                ) : (
-                  <p className="text-xs text-secondary">
-                    Online verification is unavailable. Please call {BUSINESS.phoneDisplay}.
-                  </p>
-                )}
-
                 {submitError ? (
                   <p role="alert" className="text-xs font-medium text-red-500">
                     {submitError}
                   </p>
                 ) : null}
 
-                <Button type="submit" size="lg" className="w-full" disabled={sending || !TURNSTILE_SITE_KEY}>
+                <Button type="submit" size="lg" className="w-full" disabled={sending}>
                   {sending ? "Submitting…" : "Submit request"}
                 </Button>
               </motion.form>

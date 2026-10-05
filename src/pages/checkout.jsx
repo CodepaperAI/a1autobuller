@@ -1,23 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/context/CartContext";
-import { BUSINESS } from "@/data/business";
 
 /**
  * /checkout — Booking review + finalization
  * -----------------------------------------------------------------------------
  * Shows every booking in the cart (service, date, time) with per-line removal
  * and an indicative total. The visitor always enters their name + email here
- * (logged in or not); "Confirm Booking" validates those + a Cloudflare
- * Turnstile check, emails the booking to the shop via /api/booking, clears the
- * cart, and shows the success screen.
+ * (logged in or not); "Confirm Booking" validates those fields, emails the
+ * booking to the shop via /api/booking, clears the cart, and shows the success
+ * screen.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 /** Pretty-print an ISO date (YYYY-MM-DD) as e.g. "Mon, Jul 7, 2026". */
 function formatDate(iso) {
@@ -37,79 +35,19 @@ export default function CheckoutPage() {
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState("");
-  const turnstileRef = useRef(null);
-  const widgetId = useRef(null);
-
   /**
-   * Render the Turnstile widget once the script + container are ready. We use
-   * the explicit-render API so we can reset the widget after a failed submit.
-   */
-  useEffect(() => {
-    if (!TURNSTILE_SITE_KEY) return;
-    if (confirmed) return; // widget isn't on the success screen
-    let cancelled = false;
-
-    const render = () => {
-      if (cancelled) return;
-      if (!window.turnstile || !turnstileRef.current) return;
-      if (widgetId.current !== null) return; // already rendered
-      widgetId.current = window.turnstile.render(turnstileRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
-        callback: (token) => setCaptchaToken(token),
-        "error-callback": () => setCaptchaToken(""),
-        "expired-callback": () => setCaptchaToken(""),
-      });
-    };
-
-    if (window.turnstile) {
-      render();
-    } else {
-      const t = setInterval(() => {
-        if (window.turnstile) {
-          clearInterval(t);
-          render();
-        }
-      }, 200);
-      return () => {
-        cancelled = true;
-        clearInterval(t);
-      };
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [confirmed]);
-
-  const resetCaptcha = () => {
-    setCaptchaToken("");
-    if (window.turnstile && widgetId.current !== null) {
-      window.turnstile.reset(widgetId.current);
-    }
-  };
-
-  /**
-   * Confirm Booking — require a name + valid email + a Turnstile token, then
-   * email the booking to the shop. Only clears the cart / shows success once
-   * the email request succeeds, so a booking is never silently lost.
+   * Confirm Booking — require a name + valid email, then email the booking to
+   * the shop. Only clear the cart / show success once the request succeeds.
    */
   const handleConfirm = async () => {
     if (submitting) return;
 
     if (!customerName.trim() || !EMAIL_RE.test(customerEmail)) {
       setFormError("Please enter your name and a valid email address.");
-      return;
-    }
-    if (!TURNSTILE_SITE_KEY) {
-      setFormError("Online booking is temporarily unavailable. Please call us instead.");
-      return;
-    }
-    if (!captchaToken) {
-      setFormError("Please complete the verification below.");
       return;
     }
     setFormError("");
@@ -123,17 +61,13 @@ export default function CheckoutPage() {
           customer: {
             name: customerName.trim(),
             email: customerEmail.trim(),
+            website,
           },
           items: items.map((it) => ({
-            serviceName: it.serviceName,
-            date: formatDate(it.date),
+            serviceId: it.serviceId,
+            date: it.date,
             time: it.time,
-            quantity: 1,
-            priceFrom: it.priceFrom ?? null,
-            lineTotal: it.priceFrom ?? null,
           })),
-          total: estimatedTotal,
-          turnstileToken: captchaToken,
         }),
       });
 
@@ -146,7 +80,6 @@ export default function CheckoutPage() {
       setConfirmed(true);
     } catch (err) {
       setFormError(err.message || "Something went wrong. Please try again.");
-      resetCaptcha(); // token is single-use; get a fresh one for a retry
     } finally {
       setSubmitting(false);
     }
@@ -329,15 +262,16 @@ export default function CheckoutPage() {
                   autoComplete="email"
                   className="w-full rounded-xl border divider bg-[rgb(var(--surface))] px-3.5 py-2.5 text-sm text-[rgb(var(--text-primary))] transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
                 />
-
-                {/* Cloudflare Turnstile */}
-                {TURNSTILE_SITE_KEY ? (
-                  <div ref={turnstileRef} className="mt-1" />
-                ) : (
-                  <p className="mt-1 text-xs text-secondary">
-                    Online verification is unavailable. Please call {BUSINESS.phoneDisplay}.
-                  </p>
-                )}
+                <input
+                  type="text"
+                  name="website"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="hidden"
+                  aria-hidden="true"
+                />
 
                 {formError ? (
                   <p className="text-xs font-medium text-red-500" role="alert">
@@ -353,7 +287,7 @@ export default function CheckoutPage() {
 
               <Button
                 onClick={handleConfirm}
-                disabled={submitting || !TURNSTILE_SITE_KEY}
+                disabled={submitting}
                 className="mt-5 w-full justify-center"
               >
                 {submitting ? "Sending…" : "Confirm Booking"}

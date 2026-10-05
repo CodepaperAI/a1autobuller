@@ -21,7 +21,7 @@ npm run start
 
 > Requires Node.js 18.18+ (Next.js 15).
 
-Copy `.env.example` to `.env.local` and provide the Turnstile and Resend values
+Copy `.env.example` to `.env.local` and provide the Resend values
 before testing form delivery. `UPLIFTAI_API_TOKEN` is optional and only powers
 the remote blog feed.
 
@@ -121,5 +121,5 @@ minted automatically.
 ## Notes on the mock layer
 
 Authentication is a front-end convenience layer. Contact and booking forms post
-to server-side API routes, validate Cloudflare Turnstile, and send through Resend
+to server-side API routes, validate the submitted data, and send through Resend
 when the required environment variables are configured.

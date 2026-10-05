@@ -9,30 +9,6 @@ function headerSafe(value, max = 120) {
   return String(value || "").replace(/[\r\n]+/g, " ").trim().slice(0, max);
 }
 
-/** Verify a Cloudflare Turnstile token server-side. Returns true if human. */
-async function verifyTurnstile(token, ip) {
-  if (!token) return false;
-  try {
-    const resp = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          secret: process.env.TURNSTILE_SECRET_KEY,
-          response: token,
-          ...(ip ? { remoteip: ip } : {}),
-        }),
-      }
-    );
-    const data = await resp.json();
-    return data.success === true;
-  } catch (err) {
-    console.error("Turnstile verify error:", err);
-    return false;
-  }
-}
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -40,13 +16,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { customer = {}, items = [], turnstileToken } = req.body || {};
+    const { customer = {}, items = [] } = req.body || {};
 
     const cleanCustomer = {
       name: headerSafe(customer.name),
       email: headerSafe(customer.email, 254).toLowerCase(),
       phone: headerSafe(customer.phone, 40),
     };
+
+    // Invisible honeypot: ordinary visitors leave this field empty.
+    if (headerSafe(customer.website)) {
+      return res.status(200).json({ ok: true });
+    }
 
     if (!cleanCustomer.name || !EMAIL_RE.test(cleanCustomer.email)) {
       return res.status(400).json({ error: "A valid customer name and email are required." });
@@ -56,15 +37,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No services in the booking." });
     }
 
-    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FROM_EMAIL || !(process.env.BOOKING_TO_EMAIL || process.env.CONTACT_TO_EMAIL) || !process.env.TURNSTILE_SECRET_KEY) {
+    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FROM_EMAIL || !(process.env.BOOKING_TO_EMAIL || process.env.CONTACT_TO_EMAIL)) {
       return res.status(503).json({ error: "Booking service is not configured." });
-    }
-
-    // Bot check — reject anything Cloudflare doesn't confirm as human.
-    const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim();
-    const human = await verifyTurnstile(turnstileToken, ip);
-    if (!human) {
-      return res.status(403).json({ error: "Verification failed. Please try again." });
     }
 
     const cleanItems = items.map((item) => {
