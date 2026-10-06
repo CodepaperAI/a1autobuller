@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 
 /**
  * Hero
  * -----------------------------------------------------------------------------
- * The homepage thesis. High-impact type over an animated "blueprint grid"
- * (our signature motif — collision work starts from precise measurements).
+ * The homepage thesis. High-impact content layered over real service imagery.
  * The primary CTAs take visitors directly to the real estimate and service
  * request flows without an account gate.
  */
@@ -39,25 +39,32 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden">
-      {/* Signature: animated blueprint grid + soft brand glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 animate-grid-pan bg-blueprint bg-[length:40px_40px] dark:bg-blueprint-dark"
+    <section className="relative isolate min-h-[720px] overflow-hidden bg-metal-950 sm:min-h-[760px]">
+      <Image
+        src="/hero-auto-body-shop.jpg"
+        alt="Professional auto body repair in the A1 Buller Auto Collision shop"
+        fill
+        priority
+        sizes="100vw"
+        className="-z-20 object-cover object-center"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-brand-500/20 blur-[120px]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-black/80 via-black/65 to-black/90"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(36,86,235,0.24),transparent_58%)]"
       />
 
-      <div className="section flex flex-col items-center py-24 text-center sm:py-32">
+      <div className="section relative z-10 flex min-h-[720px] flex-col items-center justify-center py-20 text-center text-white sm:min-h-[760px] sm:py-28">
         <motion.div variants={container} initial="hidden" animate="show" className="max-w-3xl">
           {/* Eyebrow */}
           <motion.p
             variants={item}
-            className="mb-5 inline-flex items-center gap-2 rounded-full border divider px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-600"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-200 backdrop-blur-sm"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-300" />
             Certified Collision & Mechanical Repair
           </motion.p>
 
@@ -67,13 +74,13 @@ export default function Hero() {
             className="text-balance text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl"
           >
             Your car, restored to{" "}
-            <span className="text-brand-600">factory-precise</span> condition.
+            <span className="text-brand-300">factory-precise</span> condition.
           </motion.h1>
 
           {/* Subhead */}
           <motion.p
             variants={item}
-            className="text-secondary mx-auto mt-6 max-w-2xl text-lg leading-relaxed"
+            className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-100"
           >
             From aluminum and EV structural repairs to precision frame racking
             and refinishing, A1 Buller Auto Collision provides complete collision
@@ -86,7 +93,12 @@ export default function Hero() {
             <Button size="lg" as="a" href="/services">
               Book an Appointment
             </Button>
-            <Button size="lg" variant="secondary" onClick={scrollToContact}>
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={scrollToContact}
+              className="border-white/30 bg-white/95 text-slate-950 hover:border-white hover:text-brand-700"
+            >
               Get a Free Estimate
             </Button>
           </motion.div>
@@ -97,14 +109,14 @@ export default function Hero() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="mt-16 flex flex-wrap items-center justify-center gap-3"
+          className="mt-14 flex flex-wrap items-center justify-center gap-3"
         >
           {BADGES.map((badge) => (
             <motion.li
               key={badge}
               variants={item}
               whileHover={{ y: -3 }}
-              className="surface-elevated rounded-xl px-4 py-2.5 text-sm font-semibold shadow-panel"
+              className="rounded-xl border border-white/20 bg-black/40 px-4 py-2.5 text-sm font-semibold text-white shadow-panel backdrop-blur-md"
             >
               {badge}
             </motion.li>
