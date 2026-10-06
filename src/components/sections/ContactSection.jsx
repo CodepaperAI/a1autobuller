@@ -31,7 +31,7 @@ function fileToBase64(file) {
 
 export default function ContactSection() {
   const fileInputRef = useRef(null);
-  const [values, setValues] = useState({ name: "", email: "", message: "", website: "" });
+  const [values, setValues] = useState({ name: "", email: "", phone: "", message: "", website: "" });
   const [errors, setErrors] = useState({});
   const [files, setFiles] = useState([]);
   const [fileError, setFileError] = useState("");
@@ -50,8 +50,12 @@ export default function ContactSection() {
   const validate = useCallback(() => {
     const next = {};
     if (!values.name.trim()) next.name = "Please enter your full name.";
-    if (!values.email.trim()) next.email = "Please enter your email address.";
-    else if (!EMAIL_RE.test(values.email)) next.email = "That email doesn't look right.";
+    if (!values.email.trim() && !values.phone.trim()) {
+      next.email = "Please enter an email address or phone number.";
+      next.phone = "Please enter an email address or phone number.";
+    } else if (values.email.trim() && !EMAIL_RE.test(values.email)) {
+      next.email = "That email doesn't look right.";
+    }
     if (!values.message.trim()) next.message = "Tell us briefly what you need.";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -111,8 +115,10 @@ export default function ContactSection() {
         body: JSON.stringify({
           name: values.name,
           email: values.email,
+          phone: values.phone,
           message: values.message,
           website: values.website,
+          source: window.location.pathname,
           attachments,
         }),
       });
@@ -123,7 +129,7 @@ export default function ContactSection() {
       }
 
       setSubmitted(true);
-      setValues({ name: "", email: "", message: "", website: "" });
+      setValues({ name: "", email: "", phone: "", message: "", website: "" });
       setFiles([]);
     } catch (err) {
       setSubmitError(err.message || "Something went wrong. Please try again.");
@@ -169,7 +175,15 @@ export default function ContactSection() {
           <div className="mt-8 space-y-4 text-sm">
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📍</span>
-              <span>{BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada</span>
+              <a
+                href={BUSINESS.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-brand-600"
+              >
+                {BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada
+                <span className="ml-2 text-brand-600">Get directions →</span>
+              </a>
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📞</span>
@@ -239,16 +253,29 @@ export default function ContactSection() {
                   error={errors.name}
                   autoComplete="name"
                 />
-                <Input
-                  label="Email address"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={values.email}
-                  onChange={setField("email")}
-                  error={errors.email}
-                  autoComplete="email"
-                />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Input
+                    label="Email address"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={values.email}
+                    onChange={setField("email")}
+                    error={errors.email}
+                    autoComplete="email"
+                  />
+                  <Input
+                    label="Phone number"
+                    name="phone"
+                    type="tel"
+                    placeholder="(604) 555-0123"
+                    value={values.phone}
+                    onChange={setField("phone")}
+                    error={errors.phone}
+                    autoComplete="tel"
+                  />
+                </div>
+                <p className="-mt-3 text-xs text-secondary">Enter either email or phone so we can reply.</p>
                 <Textarea
                   label="How can we help?"
                   name="message"

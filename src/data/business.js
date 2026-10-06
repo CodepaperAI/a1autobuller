@@ -17,6 +17,8 @@ export const BUSINESS = {
     longitude: -122.9779,
   },
   hoursDisplay: "Mon–Sat: 9:00 AM–6:00 PM; Sun: by appointment",
+  mapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=7055%20Buller%20Ave%2C%20Burnaby%2C%20BC%20V5J%204S1",
   socialProfiles: [
     "https://facebook.com/a1bullerautocollision",
     "https://instagram.com/a1bullerautocollision",
@@ -35,11 +37,13 @@ export const LOCAL_BUSINESS_SCHEMA = {
   name: BUSINESS.name,
   legalName: BUSINESS.legalName,
   url: BUSINESS.siteUrl,
+  description:
+    "Burnaby auto body and collision repair shop providing ICBC claim support, structural repair, refinishing, aluminum and EV repair, and mechanical service.",
   logo: absoluteUrl("/logo-light.png"),
-  image: absoluteUrl("/logo-light.png"),
+  image: absoluteUrl("/hero-auto-body-shop.jpg"),
   telephone: BUSINESS.phone,
   email: BUSINESS.email,
-  priceRange: "$$",
+  hasMap: BUSINESS.mapsUrl,
   address: {
     "@type": "PostalAddress",
     streetAddress: BUSINESS.address.street,
@@ -61,6 +65,49 @@ export const LOCAL_BUSINESS_SCHEMA = {
       closes: "18:00",
     },
   ],
-  areaServed: ["Burnaby", "Vancouver", "New Westminster", "Richmond", "Coquitlam"],
+  areaServed: [
+    { "@type": "City", name: "Burnaby" },
+    { "@type": "City", name: "Vancouver" },
+    { "@type": "City", name: "New Westminster" },
+    { "@type": "City", name: "Richmond" },
+    { "@type": "City", name: "Coquitlam" },
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: BUSINESS.phone,
+    email: BUSINESS.email,
+    contactType: "customer service",
+    availableLanguage: "English",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Auto body, collision, and mechanical services",
+    itemListElement: [
+      "ICBC collision repair",
+      "Auto body repair",
+      "Dent and bumper repair",
+      "Frame straightening",
+      "Auto painting and refinishing",
+      "Aluminum and EV repair",
+      "Wheel alignment",
+      "Brake repair",
+      "Tire service",
+      "Vehicle diagnostics",
+    ].map((name) => ({
+      "@type": "Offer",
+      itemOffered: { "@type": "Service", name },
+    })),
+  },
   sameAs: BUSINESS.socialProfiles,
+};
+
+export const WEBSITE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${BUSINESS.siteUrl}/#website`,
+  url: BUSINESS.siteUrl,
+  name: BUSINESS.name,
+  alternateName: "A1 Buller Auto",
+  inLanguage: "en-CA",
+  publisher: { "@id": `${BUSINESS.siteUrl}/#business` },
 };

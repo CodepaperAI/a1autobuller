@@ -5,7 +5,7 @@ import { BUSINESS } from "@/data/business";
  * Inline styles only — email clients ignore <style> and external CSS.
  * Colors mirror the site: cobalt/sapphire brand on a dark slate header.
  */
-export function buildContactEmail({ name, email, message, phone }) {
+export function buildContactEmail({ name, email, message, phone, source }) {
   const brand = "#2456eb";
   const dark = "#0a0b10";
   const slate = "#1a1d26";
@@ -47,6 +47,7 @@ export function buildContactEmail({ name, email, message, phone }) {
           ${row("Name", safe(name))}
           ${row("Email", safe(email))}
           ${phone ? row("Phone", safe(phone)) : ""}
+          ${source ? row("Lead source", safe(source)) : ""}
           <tr>
             <td style="padding:14px 24px;">
               <p style="margin:0 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:${textMuted};">Message</p>

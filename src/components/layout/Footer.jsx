@@ -153,7 +153,14 @@ const { theme, mounted } = useTheme();
         <circle cx="12" cy="10" r="2.5" />
       </svg>
 
-      <span>{BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada</span>
+      <a
+        href={BUSINESS.mapsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition-colors hover:text-brand-600"
+      >
+        {BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada
+      </a>
     </li>
 
     {/* Phone */}

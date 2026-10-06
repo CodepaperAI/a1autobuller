@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, message, phone, website, attachments = [] } = req.body || {};
+    const { name, email, message, phone, website, source, attachments = [] } = req.body || {};
 
     // Invisible honeypot: ordinary visitors leave this field empty.
     if (headerSafe(website)) {
@@ -30,10 +30,13 @@ export default async function handler(req, res) {
     const cleanName = headerSafe(name);
     const cleanEmail = headerSafe(email, 254).toLowerCase();
     const cleanPhone = headerSafe(phone, 40);
+    const cleanSource = headerSafe(source, 160);
     const cleanMessage = String(message || "").trim().slice(0, 5000);
 
-    if (!cleanName || !EMAIL_RE.test(cleanEmail) || !cleanMessage) {
-      return res.status(400).json({ error: "Name, email, and message are required." });
+    const hasContact = Boolean(cleanEmail || cleanPhone);
+    const emailIsValid = !cleanEmail || EMAIL_RE.test(cleanEmail);
+    if (!cleanName || !hasContact || !emailIsValid || !cleanMessage) {
+      return res.status(400).json({ error: "Name, message, and an email or phone number are required." });
     }
 
     if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FROM_EMAIL || !process.env.CONTACT_TO_EMAIL) {
@@ -60,9 +63,15 @@ export default async function handler(req, res) {
     const { error } = await resend.emails.send({
       from: `${cleanName} <${process.env.CONTACT_FROM_EMAIL}>`,
       to: [process.env.CONTACT_TO_EMAIL],
-      replyTo: cleanEmail,
-      subject: `New enquiry from ${cleanName}`,
-      html: buildContactEmail({ name: cleanName, email: cleanEmail, message: cleanMessage, phone: cleanPhone }),
+      replyTo: cleanEmail || undefined,
+      subject: `New website lead from ${cleanName}`,
+      html: buildContactEmail({
+        name: cleanName,
+        email: cleanEmail,
+        message: cleanMessage,
+        phone: cleanPhone,
+        source: cleanSource,
+      }),
       attachments: files.length ? files : undefined,
     });
 

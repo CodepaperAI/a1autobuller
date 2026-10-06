@@ -15,6 +15,12 @@ const FEATURED_SERVICES = FEATURED_IDS.map((id) =>
   SERVICE_CATALOG.find((service) => service.id === id)
 ).filter(Boolean);
 
+const SEO_PATHS = {
+  "auto-body-repair": "/services/auto-body-repair/burnaby",
+  "brake-system": "/services/brake-repair/burnaby",
+  "tire-wheel": "/services/tire-services/burnaby",
+};
+
 export default function FeaturedServices() {
   return (
     <section className="section py-20 sm:py-28">
@@ -46,7 +52,7 @@ export default function FeaturedServices() {
             transition={{ duration: 0.45, delay: index * 0.06 }}
             className="group surface-elevated overflow-hidden rounded-2xl shadow-panel"
           >
-            <Link href="/services" className="block">
+            <Link href={SEO_PATHS[service.id] || "/services"} className="block">
               <div className="relative aspect-[4/3] overflow-hidden bg-metal-900/10">
                 <Image
                   src={service.image}

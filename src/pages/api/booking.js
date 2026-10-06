@@ -29,8 +29,10 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
-    if (!cleanCustomer.name || !EMAIL_RE.test(cleanCustomer.email)) {
-      return res.status(400).json({ error: "A valid customer name and email are required." });
+    const hasContact = Boolean(cleanCustomer.email || cleanCustomer.phone);
+    const emailIsValid = !cleanCustomer.email || EMAIL_RE.test(cleanCustomer.email);
+    if (!cleanCustomer.name || !hasContact || !emailIsValid) {
+      return res.status(400).json({ error: "A customer name and valid email or phone number are required." });
     }
 
     if (!Array.isArray(items) || items.length === 0 || items.length > 20) {
@@ -64,8 +66,8 @@ export default async function handler(req, res) {
     const { error } = await resend.emails.send({
       from: `${cleanCustomer.name} <${process.env.CONTACT_FROM_EMAIL}>`,
       to: [to],
-      replyTo: cleanCustomer.email,
-      subject: `New booking from ${cleanCustomer.name} — ${cleanItems.length} service${cleanItems.length > 1 ? "s" : ""}`,
+      replyTo: cleanCustomer.email || undefined,
+      subject: `New appointment lead from ${cleanCustomer.name} — ${cleanItems.length} service${cleanItems.length > 1 ? "s" : ""}`,
       html: buildBookingEmail({
         customer: cleanCustomer,
         items: cleanItems,

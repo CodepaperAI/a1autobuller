@@ -11,6 +11,7 @@ import {
   getLocation,
   getAllPaths,
   buildSeo,
+  serviceFaqs,
   services,
   locations,
 } from "@/data/seo";
@@ -73,6 +74,7 @@ export async function getStaticProps({ params }) {
         highlights: service.highlights,
         duration: service.duration,
         introText: service.intro(location.name),
+        faqs: serviceFaqs[service.slug] || [],
       },
       location,
       seo,
@@ -110,7 +112,9 @@ export default function LocalServicePage({
     "@type": "Service",
     name: service.name,
     description: seo.metaDescription,
+    serviceType: service.short,
     url: `${BUSINESS.siteUrl}${seo.canonical}`,
+    image: `${BUSINESS.siteUrl}/hero-auto-body-shop.jpg`,
     areaServed: {
       "@type": "City",
       name: area,
@@ -118,7 +122,28 @@ export default function LocalServicePage({
     provider: {
       "@id": `${BUSINESS.siteUrl}/#business`,
     },
+    availableChannel: {
+      "@type": "ServiceChannel",
+      serviceUrl: `${BUSINESS.siteUrl}/contact`,
+      servicePhone: {
+        "@type": "ContactPoint",
+        telephone: BUSINESS.phone,
+        contactType: "appointments",
+      },
+    },
   };
+
+  const faqSchema = service.faqs.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: service.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
+        })),
+      }
+    : null;
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -136,8 +161,9 @@ export default function LocalServicePage({
         title={seo.title}
         description={seo.metaDescription}
         path={seo.canonical}
-        keywords={seo.keywords}
-        jsonLd={[serviceSchema, breadcrumbSchema]}
+        image={`${BUSINESS.siteUrl}/hero-auto-body-shop.jpg`}
+        imageAlt={`${service.name} at A1 Buller Auto Collision in Burnaby`}
+        jsonLd={[serviceSchema, breadcrumbSchema, faqSchema]}
       />
 
       {/* Hero band */}
@@ -229,6 +255,61 @@ export default function LocalServicePage({
             repair procedures and provide a clear estimate before work begins.
             Typical turnaround for this service is <strong>{service.duration}</strong>.
           </p>
+
+          <h2 className="mt-10 text-2xl font-bold tracking-tight">
+            What to expect from your appointment
+          </h2>
+          <ol className="mt-5 grid gap-4 sm:grid-cols-2">
+            {[
+              ["1", "Tell us what happened", "Call or send the vehicle details and photos so our team can prepare for the assessment."],
+              ["2", "Inspect and document", `We inspect the vehicle and document the work required for ${service.name}.`],
+              ["3", "Review the estimate", "You receive a clear repair plan before authorized work begins."],
+              ["4", "Complete and verify", "The work is completed, checked, and explained before the vehicle is returned."],
+            ].map(([number, title, body]) => (
+              <li key={number} className="rounded-2xl border divider p-5">
+                <span className="text-sm font-bold text-brand-600">STEP {number}</span>
+                <h3 className="mt-2 font-display text-lg font-bold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-secondary">{body}</p>
+              </li>
+            ))}
+          </ol>
+
+          {service.faqs.length ? (
+            <section className="mt-12" aria-labelledby="service-faq-heading">
+              <h2 id="service-faq-heading" className="text-2xl font-bold tracking-tight">
+                {service.name} questions
+              </h2>
+              <div className="mt-5 space-y-4">
+                {service.faqs.map((faq) => (
+                  <article key={faq.q} className="rounded-2xl border divider p-5">
+                    <h3 className="font-display text-lg font-bold">{faq.q}</h3>
+                    <p className="mt-2 leading-relaxed text-secondary">{faq.a}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <div className="mt-12 rounded-2xl bg-brand-600 p-6 text-white sm:p-8">
+            <h2 className="font-display text-2xl font-extrabold">
+              Request an assessment for {service.name}
+            </h2>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/85">
+              Send photos online or call our Burnaby shop. We&apos;ll review the vehicle,
+              explain the next steps, and confirm availability before the appointment.
+            </p>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+              <Button as={Link} href="/contact" variant="secondary">
+                Send photos for an estimate
+              </Button>
+              <a
+                href={`tel:${BUSINESS.phone}`}
+                className="inline-flex items-center justify-center rounded-xl border border-white/50 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                Call {BUSINESS.phoneDisplay}
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Sidebar */}

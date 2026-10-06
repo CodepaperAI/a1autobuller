@@ -42,7 +42,12 @@ export default function LandingPage({ config }) {
   const validate = () => {
     const next = {};
     if (!values.name.trim()) next.name = "Please enter your name.";
-    if (!EMAIL_RE.test(values.email)) next.email = "Please enter a valid email.";
+    if (!values.email.trim() && !values.phone.trim()) {
+      next.email = "Enter an email or phone number.";
+      next.phone = "Enter an email or phone number.";
+    } else if (values.email.trim() && !EMAIL_RE.test(values.email)) {
+      next.email = "Please enter a valid email.";
+    }
     if (!values.message.trim()) next.message = "Tell us briefly what happened.";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -71,6 +76,7 @@ export default function LandingPage({ config }) {
           email: values.email,
           phone: values.phone,
           website: values.website,
+          source: `/${config.slug}`,
           message: `[Landing: ${config.slug}]\n\n${values.message}`,
           attachments,
         }),
@@ -94,20 +100,42 @@ export default function LandingPage({ config }) {
   const fieldClass =
     "w-full rounded-xl border divider bg-[rgb(var(--surface))] px-3.5 py-2.5 text-sm text-[rgb(var(--text-primary))] transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30";
 
+  const path = `/${config.slug}`;
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: config.heading,
+    serviceType: config.heading.replace(" in Burnaby", ""),
+    description: config.subheading,
+    url: `${BUSINESS.siteUrl}${path}`,
+    areaServed: { "@type": "City", name: "Burnaby, BC" },
+    provider: { "@id": `${BUSINESS.siteUrl}/#business` },
+    availableChannel: {
+      "@type": "ServiceChannel",
+      serviceUrl: `${BUSINESS.siteUrl}/contact`,
+      servicePhone: {
+        "@type": "ContactPoint",
+        telephone: BUSINESS.phone,
+        contactType: "estimates",
+      },
+    },
+  };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: BUSINESS.siteUrl },
+      { "@type": "ListItem", position: 2, name: config.heading },
+    ],
+  };
+
   return (
     <>
       <SeoHead
         title={`${config.heading} | A1 Buller Auto Collision`}
         description={config.subheading}
-        path={`/${config.slug}`}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
-          name: config.heading,
-          description: config.subheading,
-          areaServed: { "@type": "City", name: "Burnaby, BC" },
-          provider: { "@id": `${BUSINESS.siteUrl}/#business` },
-        }}
+        path={path}
+        jsonLd={[serviceSchema, breadcrumbSchema]}
       />
 
       <section className="section py-14 sm:py-20">
@@ -233,11 +261,13 @@ export default function LandingPage({ config }) {
                     </div>
                     <div>
                       <label htmlFor="l-phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-secondary">
-                        Phone <span className="normal-case text-secondary/70">(optional)</span>
+                        Phone
                       </label>
                       <input id="l-phone" type="tel" value={values.phone} onChange={setField("phone")} className={fieldClass} autoComplete="tel" />
+                      {errors.phone ? <p className="mt-1 text-xs font-medium text-red-500">{errors.phone}</p> : null}
                     </div>
                   </div>
+                  <p className="-mt-2 text-xs text-secondary">Enter either email or phone so we can reply.</p>
 
                   <div>
                     <label htmlFor="l-message" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-secondary">

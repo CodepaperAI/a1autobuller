@@ -9,7 +9,7 @@ import { useCart } from "@/context/CartContext";
  * /checkout — Booking review + finalization
  * -----------------------------------------------------------------------------
  * Shows every appointment request in the cart (service, preferred date/time)
- * with per-line removal. The visitor enters their name + email; submitting
+ * with per-line removal. The visitor enters their name and a reply method; submitting
  * emails the request to the shop, clears the cart, and shows a success screen.
  */
 
@@ -33,19 +33,26 @@ export default function CheckoutPage() {
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [website, setWebsite] = useState("");
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   /**
-   * Require a name + valid email, then email the appointment request to the
+   * Require a name plus an email or phone, then email the appointment request to the
    * shop. Only clear the cart / show success once the request succeeds.
    */
   const handleConfirm = async () => {
     if (submitting) return;
 
-    if (!customerName.trim() || !EMAIL_RE.test(customerEmail)) {
-      setFormError("Please enter your name and a valid email address.");
+    const cleanEmail = customerEmail.trim();
+    const cleanPhone = customerPhone.trim();
+    if (
+      !customerName.trim() ||
+      (!cleanEmail && !cleanPhone) ||
+      (cleanEmail && !EMAIL_RE.test(cleanEmail))
+    ) {
+      setFormError("Please enter your name and a valid email or phone number.");
       return;
     }
     setFormError("");
@@ -58,7 +65,8 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           customer: {
             name: customerName.trim(),
-            email: customerEmail.trim(),
+            email: cleanEmail,
+            phone: cleanPhone,
             website,
           },
           items: items.map((it) => ({
@@ -251,6 +259,19 @@ export default function CheckoutPage() {
                   autoComplete="email"
                   className="w-full rounded-xl border divider bg-[rgb(var(--surface))] px-3.5 py-2.5 text-sm text-[rgb(var(--text-primary))] transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
                 />
+                <input
+                  id="cust-phone"
+                  type="tel"
+                  placeholder="Phone number"
+                  value={customerPhone}
+                  onChange={(e) => {
+                    setCustomerPhone(e.target.value);
+                    setFormError("");
+                  }}
+                  autoComplete="tel"
+                  className="w-full rounded-xl border divider bg-[rgb(var(--surface))] px-3.5 py-2.5 text-sm text-[rgb(var(--text-primary))] transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                />
+                <p className="text-xs text-secondary">Enter either email or phone so we can confirm the appointment.</p>
                 <input
                   type="text"
                   name="website"

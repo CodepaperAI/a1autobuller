@@ -3,11 +3,13 @@
 
 import { useState, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import SeoHead from "@/components/seo/SeoHead";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import ServiceDetailModal from "@/components/ui/ServiceDetailModal";
 import { SERVICE_CATALOG } from "@/data/servicesCatalog";
+import { services as SEO_SERVICES } from "@/data/seo";
 
 /**
  * /services — Master Service Catalog
@@ -204,6 +206,33 @@ export default function ServicesPage() {
             <ServiceCard key={service.id} service={service} index={i} onOpen={handleOpen} />
           ))}
         </div>
+
+        <section className="mt-20 rounded-3xl surface-elevated p-6 shadow-panel sm:p-10" aria-labelledby="repair-guides-heading">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">
+              Burnaby repair information
+            </p>
+            <h2 id="repair-guides-heading" className="mt-3 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
+              Learn about your repair before requesting an estimate
+            </h2>
+            <p className="mt-3 leading-relaxed text-secondary">
+              These detailed service pages explain inspection steps, typical timing,
+              common questions, and how to contact our shop at 7055 Buller Ave.
+            </p>
+          </div>
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {SEO_SERVICES.map((service) => (
+              <Link
+                key={service.slug}
+                href={`/services/${service.slug}/burnaby`}
+                className="rounded-xl border divider bg-[rgb(var(--surface))] p-4 transition-colors hover:border-brand-500 hover:text-brand-600"
+              >
+                <span className="font-semibold">{service.name}</span>
+                <span className="mt-1 block text-sm text-secondary">{service.short}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       </section>
 
       {/* Detail modal: image + details + date/time slot + Add to Cart */}
