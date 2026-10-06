@@ -28,7 +28,6 @@ export const services = [
       "Dedicated clean aluminum repair bay",
       "EV high-voltage safe handling",
     ],
-    priceFrom: "$450",
     duration: "2–5 days",
     // Templated copy generators (kept as functions so we can weave in location).
     intro: (loc) =>
@@ -44,7 +43,6 @@ export const services = [
       "Full unibody & full-frame pulling",
       "Pre- and post-repair measurement reports",
     ],
-    priceFrom: "$600",
     duration: "3–6 days",
     intro: (loc) =>
       `A bent frame compromises safety long after the visible damage is fixed. Drivers across ${loc} bring their vehicles to A1 Buller Auto for computerized frame racking that restores factory dimensions to the millimeter.`,
@@ -59,7 +57,6 @@ export const services = [
       "Direct claim support",
       "Documented repair process",
     ],
-    priceFrom: "Free estimate",
     duration: "Confirmed after inspection",
     intro: (loc) =>
       `Drivers from ${loc} can bring their ICBC collision claim to our Burnaby repair facility. Our team documents the damage, explains the repair plan, and helps keep the claim and repair process moving clearly.`,
@@ -74,7 +71,6 @@ export const services = [
       "Insurance claim assistance",
       "Lifetime workmanship warranty",
     ],
-    priceFrom: "$250",
     duration: "1–4 days",
     intro: (loc) =>
       `From parking-lot dings to major collision damage, A1 Buller Auto restores ${loc} vehicles to pre-accident condition with precision panel work and a lifetime workmanship warranty.`,
@@ -89,7 +85,6 @@ export const services = [
       "Downdraft spray booth finish",
       "Factory-grade clear coat",
     ],
-    priceFrom: "$300",
     duration: "2–5 days",
     intro: (loc) =>
       `Our downdraft booth and computerized color matching deliver a factory-flawless finish. ${loc} drivers choose A1 Buller Auto when the paint has to be invisible against the original.`,
@@ -104,7 +99,6 @@ export const services = [
       "Camber, caster & toe correction",
       "Printed alignment report",
     ],
-    priceFrom: "$89",
     duration: "1–2 hours",
     intro: (loc) =>
       `Uneven tire wear and a pulling steering wheel cost ${loc} drivers real money. Our laser four-wheel alignment brings camber, caster, and toe back to manufacturer spec.`,
@@ -119,7 +113,6 @@ export const services = [
       "Leak detection & repair",
       "Refrigerant recharge",
     ],
-    priceFrom: "$120",
     duration: "1–3 hours",
     intro: (loc) =>
       `When the cabin won't cool, our technicians diagnose the whole system rather than just topping off refrigerant. ${loc} customers get a lasting A/C fix, not a temporary one.`,
@@ -134,7 +127,6 @@ export const services = [
       "Brake fluid flush",
       "ABS diagnostics",
     ],
-    priceFrom: "$150",
     duration: "2–4 hours",
     intro: (loc) =>
       `Braking is not the place to cut corners. A1 Buller Auto services brakes for ${loc} drivers with OEM-grade pads, rotors, and a full safety inspection on every job.`,
@@ -149,7 +141,6 @@ export const services = [
       "Road-force balancing",
       "Flat repair & rotation",
     ],
-    priceFrom: "$25",
     duration: "30–90 minutes",
     intro: (loc) =>
       `From a single flat repair to a full set with road-force balancing, ${loc} drivers keep rolling with A1 Buller Auto's tire department.`,

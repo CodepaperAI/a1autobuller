@@ -8,11 +8,9 @@ import { useCart } from "@/context/CartContext";
 /**
  * /checkout — Booking review + finalization
  * -----------------------------------------------------------------------------
- * Shows every booking in the cart (service, date, time) with per-line removal
- * and an indicative total. The visitor always enters their name + email here
- * (logged in or not); "Confirm Booking" validates those fields, emails the
- * booking to the shop via /api/booking, clears the cart, and shows the success
- * screen.
+ * Shows every appointment request in the cart (service, preferred date/time)
+ * with per-line removal. The visitor enters their name + email; submitting
+ * emails the request to the shop, clears the cart, and shows a success screen.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,17 +29,17 @@ function formatDate(iso) {
 }
 
 export default function CheckoutPage() {
-  const { items, count, estimatedTotal, removeFromCart, clearCart, ready } = useCart();
+  const { items, count, removeFromCart, clearCart, ready } = useCart();
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [website, setWebsite] = useState("");
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   /**
-   * Confirm Booking — require a name + valid email, then email the booking to
-   * the shop. Only clear the cart / show success once the request succeeds.
+   * Require a name + valid email, then email the appointment request to the
+   * shop. Only clear the cart / show success once the request succeeds.
    */
   const handleConfirm = async () => {
     if (submitting) return;
@@ -77,7 +75,7 @@ export default function CheckoutPage() {
       }
 
       clearCart();
-      setConfirmed(true);
+      setSubmitted(true);
     } catch (err) {
       setFormError(err.message || "Something went wrong. Please try again.");
     } finally {
@@ -86,11 +84,11 @@ export default function CheckoutPage() {
   };
 
   /* --- Success screen ----------------------------------------------------- */
-  if (confirmed) {
+  if (submitted) {
     return (
       <>
         <Head>
-          <title>Booking Confirmed | A1 Buller Auto</title>
+          <title>Appointment Request Sent | A1 Buller Auto</title>
           <meta name="robots" content="noindex" />
         </Head>
         <section className="section flex min-h-[60vh] flex-col items-center justify-center py-16 text-center">
@@ -105,15 +103,15 @@ export default function CheckoutPage() {
             </svg>
           </motion.div>
           <h1 className="font-display text-3xl font-extrabold tracking-tight">
-            Booking confirmed
+            Appointment request sent
           </h1>
           <p className="mt-3 max-w-md text-secondary">
-            Thanks! Your appointment request is in — we&apos;ll be in touch by
-            email shortly to confirm the details.
+            Thanks! We&apos;ll review your preferred date and time and contact you
+            shortly to confirm availability.
           </p>
           <div className="mt-8 flex gap-3">
             <Button as={Link} href="/services" variant="outline">
-              Book another service
+              Request another service
             </Button>
             <Button as={Link} href="/">
               Back to home
@@ -145,7 +143,7 @@ export default function CheckoutPage() {
           </h1>
           <p className="mt-3 max-w-md text-secondary">
             Add a service and a time slot to get started — you can review
-            everything here before you confirm.
+            everything here before sending your request.
           </p>
           <Button as={Link} href="/services" className="mt-8">
             Browse services
@@ -169,7 +167,7 @@ export default function CheckoutPage() {
         </h1>
         <p className="mt-2 text-secondary">
           {count} {count === 1 ? "appointment" : "appointments"} ready to
-          confirm.
+          request.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Line items */}
@@ -195,11 +193,6 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
-                      {item.priceFrom != null ? (
-                        <span className="hidden text-sm font-semibold sm:inline">
-                          From ${item.priceFrom}
-                        </span>
-                      ) : null}
                       <button
                         type="button"
                         onClick={() => removeFromCart(item.id)}
@@ -226,10 +219,6 @@ export default function CheckoutPage() {
                 <div className="flex justify-between">
                   <dt className="text-secondary">Appointments</dt>
                   <dd className="font-semibold">{count}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-secondary">Estimated from</dt>
-                  <dd className="font-semibold">${estimatedTotal}</dd>
                 </div>
               </dl>
 
@@ -281,8 +270,8 @@ export default function CheckoutPage() {
               </div>
 
               <p className="mt-3 text-xs text-secondary">
-                Final pricing is confirmed after a technician reviews your
-                vehicle. No payment is taken online.
+                This is an appointment request, not a confirmed time. We&apos;ll
+                contact you to confirm availability and provide an estimate.
               </p>
 
               <Button
@@ -290,7 +279,7 @@ export default function CheckoutPage() {
                 disabled={submitting}
                 className="mt-5 w-full justify-center"
               >
-                {submitting ? "Sending…" : "Confirm Booking"}
+                {submitting ? "Sending…" : "Send Appointment Request"}
               </Button>
               <Button
                 as={Link}

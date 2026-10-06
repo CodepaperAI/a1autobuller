@@ -51,17 +51,12 @@ export default async function handler(req, res) {
         serviceName: catalogService.name,
         date: item.date,
         time: item.time,
-        priceFrom: catalogService.priceFrom,
-        lineTotal: catalogService.priceFrom,
       };
     });
 
     if (cleanItems.some((item) => item === null)) {
       return res.status(400).json({ error: "One or more booking items are invalid." });
     }
-
-    // Catalog pricing is authoritative; never trust totals sent by the browser.
-    const computedTotal = cleanItems.reduce((sum, item) => sum + item.lineTotal, 0);
 
     const resend = new Resend(process.env.RESEND_API_KEY);
     const to = process.env.BOOKING_TO_EMAIL || process.env.CONTACT_TO_EMAIL;
@@ -74,7 +69,6 @@ export default async function handler(req, res) {
       html: buildBookingEmail({
         customer: cleanCustomer,
         items: cleanItems,
-        total: computedTotal,
       }),
     });
 

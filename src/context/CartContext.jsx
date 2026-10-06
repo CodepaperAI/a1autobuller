@@ -19,12 +19,8 @@ import {
  *     serviceName: string,   // human-readable service name
  *     date:        string,   // ISO "YYYY-MM-DD" chosen in the date picker
  *     time:        string,   // "9:30 AM" style 30-min slot label
- *     priceFrom:   number,   // indicative starting price (optional)
  *     addedAt:     number,   // timestamp for stable sorting
  *   }
- *
- * Browsing and adding to cart are fully anonymous — the login intercept only
- * happens at checkout finalization (see /checkout + <AuthModal>).
  *
  * State is mirrored to localStorage so a page refresh doesn't wipe the cart.
  */
@@ -63,7 +59,7 @@ export function CartProvider({ children }) {
 
   /**
    * Push a new booking into the cart.
-   * Accepts { serviceId, serviceName, date, time, priceFrom } and stamps an id.
+   * Accepts { serviceId, serviceName, date, time } and stamps an id.
    * De-dupes exact (service + date + time) combinations so a double-click can't
    * create two identical appointments.
    */
@@ -86,7 +82,6 @@ export function CartProvider({ children }) {
         serviceName: booking.serviceName,
         date: booking.date,
         time: booking.time,
-        priceFrom: booking.priceFrom ?? null,
         addedAt: Date.now(),
       };
       return [...prev, entry];
@@ -98,27 +93,21 @@ export function CartProvider({ children }) {
     setItems((prev) => prev.filter((b) => b.id !== id));
   }, []);
 
-  /** Empty the cart entirely (e.g. after a confirmed booking). */
+  /** Empty the cart after an appointment request is sent. */
   const clearCart = useCallback(() => setItems([]), []);
 
   // Derived helpers, memoized so consumers don't re-render needlessly.
   const count = items.length;
-  const estimatedTotal = useMemo(
-    () => items.reduce((sum, b) => sum + (Number(b.priceFrom) || 0), 0),
-    [items]
-  );
-
   const value = useMemo(
     () => ({
       items,
       count,
-      estimatedTotal,
       ready,
       addToCart,
       removeFromCart,
       clearCart,
     }),
-    [items, count, estimatedTotal, ready, addToCart, removeFromCart, clearCart]
+    [items, count, ready, addToCart, removeFromCart, clearCart]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

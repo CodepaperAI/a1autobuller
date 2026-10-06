@@ -30,13 +30,10 @@ the remote blog feed.
 - **Unified typography** — Plus Jakarta Sans (headings, `font-display` /
   `--font-jakarta`) + Inter (body, `font-sans` / `--font-inter`), both
   self-hosted via `next/font` for a consistent, layout-shift-free type system.
-- **Service catalog + cart** — `/services` lists all 11 core service categories
-  with sub-items and an inline 30-minute-interval scheduler (9:00 AM–4:30 PM).
-  "Add to Cart" pushes `{ serviceName, date, time }` into `CartContext`
-  (persisted to `localStorage`); the navbar shows a live animated badge count.
-- **Checkout intercept** — `/checkout` reviews the cart; clicking
-  "Confirm Booking" while signed out surfaces the `AuthModal` (login / register
-  redirect). Browsing and adding to cart stay fully anonymous.
+- **Service catalog + appointment requests** — `/services` lists all 11 core
+  service categories with local imagery, service details, and a preferred
+  date/time selector. Requests are persisted in the cart until they are emailed
+  to the shop through the real booking API.
 - **True navigation** — the navbar uses real page redirection: Home `/`,
   Services `/services`, Contact Us `/contact` (no inner-page anchor scrolling).
 - **Theme context** — Light (white + cobalt/sapphire) and Dark (deep black +
@@ -46,9 +43,9 @@ the remote blog feed.
 - **Framer Motion** — staggered page-load sequences, scroll reveals, hover
   micro-interactions, animated theme toggle, mobile slide-in drawer, and modal
   transitions. Reduced-motion is respected globally in `globals.css`.
-- **Optional auth + booking intercept** — browsing is never gated. Clicking
-  "Book an Appointment" (or submitting the contact form) while signed out opens
-  a modal inviting login / registration, with a "continue as guest" escape.
+- **Service imagery** — locally hosted, optimized service images appear on the
+  homepage, catalog cards, detail views, and image lightbox without third-party
+  hotlinks.
 - **Lead-capture form** — full name, email, message, and a drag-and-drop /
   click-to-upload area for damage photos, with client-side validation and an
   animated success state.
@@ -69,24 +66,21 @@ a1bullerautocollision/
 └── src/
     ├── context/
     │   ├── ThemeContext.jsx     # light/dark provider + persistence
-    │   ├── AuthContext.jsx      # optional mock auth + booking-intercept state
-    │   └── CartContext.jsx      # booking cart (add/remove/clear) + localStorage
+    │   └── CartContext.jsx      # appointment request cart + localStorage
     ├── data/
     │   ├── seo.js               # programmatic-SEO services/locations
     │   └── servicesCatalog.js   # the 11 core services + 30-min TIME_SLOTS
     ├── components/
-    │   ├── ui/                  # Button, Input/Textarea, Card, ModeToggle, Modal, BookingPromptModal, AuthModal
+    │   ├── ui/                  # Button, Input/Textarea, Card, ModeToggle, Modal
     │   ├── layout/             # Navbar (true routes + cart badge), Footer, LayoutWrapper
     │   └── sections/           # Hero, Intro, ContactSection
     ├── pages/
-    │   ├── _app.jsx            # providers (Theme/Auth/Cart) + fonts + layout shell
+    │   ├── _app.jsx            # providers (Theme/Cart) + fonts + layout shell
     │   ├── _document.jsx       # <html lang> + no-flash theme script
     │   ├── index.jsx           # homepage (Hero + Intro + ContactSection)
-    │   ├── services.jsx        # 10-service catalog + inline scheduler + add-to-cart
-    │   ├── checkout.jsx        # cart review + AuthModal login intercept
+    │   ├── services.jsx        # 11-service visual catalog + request scheduler
+    │   ├── checkout.jsx        # appointment request review + customer details
     │   ├── contact.jsx         # dedicated contact page
-    │   ├── login.jsx
-    │   ├── register.jsx
     │   ├── certifications.jsx
     │   └── services/
     │       └── [service]/
@@ -118,8 +112,10 @@ Example generated URLs:
 Add a service or a Metro Vancouver service area to the dictionaries and new optimized pages are
 minted automatically.
 
-## Notes on the mock layer
+## Form delivery
 
-Authentication is a front-end convenience layer. Contact and booking forms post
-to server-side API routes, validate the submitted data, and send through Resend
-when the required environment variables are configured.
+Contact and appointment-request forms post to server-side API routes, validate
+the submitted data, apply a lightweight honeypot check, and send through Resend
+when the required environment variables are configured. The site does not
+present demo accounts, fake repair tracking, unverified online prices, or a
+pretend live-availability calendar.

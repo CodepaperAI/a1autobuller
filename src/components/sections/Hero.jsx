@@ -1,15 +1,14 @@
 import { useCallback } from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
-import { useAuth } from "@/context/AuthContext";
 
 /**
  * Hero
  * -----------------------------------------------------------------------------
  * The homepage thesis. High-impact type over an animated "blueprint grid"
  * (our signature motif — collision work starts from precise measurements).
- * The primary CTA routes through the booking intercept: signed-out visitors
- * see the optional-auth modal, everyone else scrolls straight to the form.
+ * The primary CTAs take visitors directly to the real estimate and service
+ * request flows without an account gate.
  */
 
 // Certifications / trust badges requested in the brief.
@@ -35,16 +34,9 @@ const item = {
 };
 
 export default function Hero() {
-  const { requestBooking } = useAuth();
-
   const scrollToContact = useCallback(() => {
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   }, []);
-
-  // CTA: intercept for guests, then proceed to the contact/booking form.
-  const handleBook = useCallback(() => {
-    requestBooking(scrollToContact);
-  }, [requestBooking, scrollToContact]);
 
   return (
     <section className="relative overflow-hidden">
@@ -91,7 +83,7 @@ export default function Hero() {
 
           {/* CTAs */}
           <motion.div variants={item} className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" onClick={handleBook}>
+            <Button size="lg" as="a" href="/services">
               Book an Appointment
             </Button>
             <Button size="lg" variant="secondary" onClick={scrollToContact}>

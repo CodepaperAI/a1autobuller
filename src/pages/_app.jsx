@@ -2,7 +2,6 @@ import Head from "next/head";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
-import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import ThemeHead from "@/components/ui/ThemeHead";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
@@ -29,8 +28,7 @@ const jakarta = Plus_Jakarta_Sans({
 export default function App({ Component, pageProps }) {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
+      <CartProvider>
           <ThemeHead />
 
           {/*
@@ -52,8 +50,7 @@ export default function App({ Component, pageProps }) {
               <Component {...pageProps} />
             </LayoutWrapper>
           </div>
-        </CartProvider>
-      </AuthProvider>
+      </CartProvider>
     </ThemeProvider>
   );
 }

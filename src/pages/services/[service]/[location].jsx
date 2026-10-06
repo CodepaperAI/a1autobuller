@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import SeoHead from "@/components/seo/SeoHead";
-import { useAuth } from "@/context/AuthContext";
 import { BUSINESS } from "@/data/business";
 import {
   getService,
@@ -61,7 +60,6 @@ export async function getStaticProps({ params }) {
       name: s.name,
       short: s.short,
       category: s.category,
-      priceFrom: s.priceFrom,
       duration: s.duration,
     }));
 
@@ -73,7 +71,6 @@ export async function getStaticProps({ params }) {
         short: service.short,
         category: service.category,
         highlights: service.highlights,
-        priceFrom: service.priceFrom,
         duration: service.duration,
         introText: service.intro(location.name),
       },
@@ -95,12 +92,11 @@ export default function LocalServicePage({
   relatedServices,
 }) {
   const router = useRouter();
-  const { requestBooking } = useAuth();
 
   // Declared before any early return so Hooks run in a stable order.
   const handleBook = useCallback(() => {
-    requestBooking(() => router.push("/#contact"));
-  }, [requestBooking, router]);
+    router.push("/services");
+  }, [router]);
 
   // fallback:'blocking' means this is always resolved, but guard just in case.
   if (router.isFallback) {
@@ -240,12 +236,6 @@ export default function LocalServicePage({
           <Card>
             <h3 className="text-sm font-semibold uppercase tracking-wide">At a glance</h3>
             <dl className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <dt className="text-secondary">
-                  {service.priceFrom === "Free estimate" ? "Estimate" : "Starting price"}
-                </dt>
-                <dd className="font-semibold">{service.priceFrom}</dd>
-              </div>
               <div className="flex items-center justify-between">
                 <dt className="text-secondary">Turnaround</dt>
                 <dd className="font-semibold">{service.duration}</dd>

@@ -1,5 +1,6 @@
 import SeoHead from "@/components/seo/SeoHead";
 import Hero from "@/components/sections/Hero";
+import FeaturedServices from "@/components/sections/FeaturedServices";
 import Intro from "@/components/sections/Intro";
 import ContactSection from "@/components/sections/ContactSection";
 
@@ -26,6 +27,7 @@ export default function HomePage() {
       />
 
       <Hero />
+      <FeaturedServices />
       <Intro />
       <ContactSection />
     </>

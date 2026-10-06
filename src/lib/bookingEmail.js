@@ -4,7 +4,7 @@ import { BUSINESS } from "@/data/business";
  * Themed HTML email summarizing a booking. Separate from the contact template
  * so the two flows never get confused. Inline styles only (email clients).
  */
-export function buildBookingEmail({ customer, items, total }) {
+export function buildBookingEmail({ customer, items }) {
   const brand = "#2456eb";
   const dark = "#0a0b10";
   const slate = "#1a1d26";
@@ -17,9 +17,6 @@ export function buildBookingEmail({ customer, items, total }) {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-  const money = (n) =>
-    n == null || n === "" ? "—" : `$${Number(n).toFixed(2)}`;
-
   const rows = (items || [])
     .map(
       (it) => `
@@ -31,9 +28,6 @@ export function buildBookingEmail({ customer, items, total }) {
             <span style="color:${brand};">●</span> ${safe(it.date)} &nbsp;·&nbsp; ${safe(it.time)}
             ${it.quantity && it.quantity > 1 ? ` &nbsp;·&nbsp; Qty ${safe(it.quantity)}` : ""}
           </p>
-        </td>
-        <td style="padding:16px 24px;border-bottom:1px solid ${border};text-align:right;vertical-align:top;white-space:nowrap;font-size:15px;font-weight:700;color:#ffffff;">
-          ${money(it.lineTotal != null ? it.lineTotal : it.priceFrom)}
         </td>
       </tr>`
     )
@@ -51,7 +45,7 @@ export function buildBookingEmail({ customer, items, total }) {
             </tr>
           </table>
           <p style="margin:18px 0 0;font-size:20px;font-weight:800;color:#fff;">New booking request</p>
-          <p style="margin:6px 0 0;font-size:14px;color:${textMuted};">A customer just booked service(s) through the website.</p>
+          <p style="margin:6px 0 0;font-size:14px;color:${textMuted};">A customer submitted preferred service dates through the website.</p>
         </td>
       </tr>
 
@@ -68,20 +62,15 @@ export function buildBookingEmail({ customer, items, total }) {
       <tr><td style="background:${slate};">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="padding:12px 24px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:${textMuted};">Service</td>
-            <td style="padding:12px 24px;text-align:right;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:${textMuted};">Price</td>
+            <td style="padding:12px 24px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:${textMuted};">Requested service and preferred time</td>
           </tr>
           ${rows}
-          <tr>
-            <td style="padding:18px 24px;font-size:16px;font-weight:800;color:#fff;">Estimated total</td>
-            <td style="padding:18px 24px;text-align:right;font-size:18px;font-weight:800;color:${brand};">${money(total)}</td>
-          </tr>
         </table>
       </td></tr>
 
       <tr>
         <td style="padding:16px 24px;border-top:1px solid ${border};text-align:center;">
-          <p style="margin:0;font-size:12px;color:${textMuted};">Prices are estimates confirmed on inspection · ${BUSINESS.name}, ${BUSINESS.address.street}, ${BUSINESS.address.city}, ${BUSINESS.address.region}</p>
+          <p style="margin:0;font-size:12px;color:${textMuted};">Please contact the customer to confirm availability and provide an estimate · ${BUSINESS.name}, ${BUSINESS.address.street}, ${BUSINESS.address.city}, ${BUSINESS.address.region}</p>
         </td>
       </tr>
     </table>

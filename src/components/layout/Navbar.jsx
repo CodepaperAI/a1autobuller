@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import ModeToggle from "@/components/ui/ModeToggle";
 import Button from "@/components/ui/Button";
-import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
@@ -55,10 +54,9 @@ function CartButton({ onNavigate }) {
 
 export default function Navbar() {
   const router = useRouter();
-  const { isAuthenticated, user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-const { theme, mounted: themeMounted } = useTheme();
+  const { theme, mounted: themeMounted } = useTheme();
   // Only render the portal on the client (document is undefined during SSR).
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -149,15 +147,6 @@ const { theme, mounted: themeMounted } = useTheme();
                 Call Now
               </Button>
 
-              {isAuthenticated ? (
-                <Button variant="outline" onClick={logout}>
-                  Log out ({user.name})
-                </Button>
-              ) : (
-                <Button variant="outline" as={Link} href="/login">
-                  Log in
-                </Button>
-              )}
               <Button as={Link} href="/services">Book an Appointment</Button>
             </div>
           </motion.aside>
@@ -216,21 +205,6 @@ const { theme, mounted: themeMounted } = useTheme();
           <div className="hidden items-center gap-2 md:flex">
             <CartButton />
             <ModeToggle />
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-secondary">
-                  Hi, <span className="font-semibold text-[rgb(var(--text-primary))]">{user.name}</span>
-                </span>
-                <Button variant="ghost" size="sm" onClick={logout}>
-                  Log out
-                </Button>
-              </div>
-            ) : (
-              <Button variant="ghost" size="sm" as={Link} href="/login">
-                Log in
-              </Button>
-            )}
-
             <Button size="sm" as="a" href={`tel:${BUSINESS.phone}`}>
               Call Now
             </Button>

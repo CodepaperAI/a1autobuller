@@ -86,7 +86,6 @@ export default function ServiceDetailModal({ service, open, onClose }) {
   const shortDescription = service?.tagline || service?.shortDescription || "";
   const fullDescription = service?.fullDescription || shortDescription;
   const includes = service?.items || service?.includes || [];
-  const priceFrom = service?.priceFrom ?? service?.startingPrice ?? null;
   const duration = service?.duration || service?.estimatedTime || null;
   const imageSrc = resolveImage(service);
 
@@ -104,7 +103,6 @@ export default function ServiceDetailModal({ service, open, onClose }) {
       serviceName: service.name || service.title,
       date,
       time,
-      priceFrom,
       image: imageSrc,
     });
     setJustAdded(true);
@@ -113,7 +111,7 @@ export default function ServiceDetailModal({ service, open, onClose }) {
       setDate("");
       setTime("");
     }, 1500);
-  }, [service, canAdd, addToCart, date, time, priceFrom, imageSrc]);
+  }, [service, canAdd, addToCart, date, time, imageSrc]);
 
   const handleBackdrop = useCallback(
     (e) => {
@@ -209,11 +207,6 @@ export default function ServiceDetailModal({ service, open, onClose }) {
                           <path d="M12 7v5l3 2" />
                         </svg>
                         {duration}
-                      </span>
-                    ) : null}
-                    {priceFrom != null ? (
-                      <span className="font-semibold text-[rgb(var(--text-primary))]">
-                        From ${priceFrom}
                       </span>
                     ) : null}
                   </div>

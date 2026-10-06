@@ -5,8 +5,8 @@
  * booking scheduler's time options.
  *
  * `SERVICE_CATALOG` — the 11 core auto service categories (with their
- * sub-items) rendered on /services. Each entry also carries light presentation
- * metadata (icon key, priceFrom, duration) used by the catalog cards.
+ * sub-items) rendered on /services. Each entry also carries presentation
+ * metadata (image, icon key, duration) used by the catalog cards.
  *
  * `TIME_SLOTS` — strict 30-minute interval blocks from 9:00 AM to 4:30 PM,
  * generated programmatically so the range can never drift out of sync.
@@ -20,8 +20,8 @@ export const SERVICE_CATALOG = [
   {
   id: "auto-body-repair",
   name: "Auto Body Repair",
+  image: "/Auto Body Repair.png",
   icon: "car",
-  priceFrom: 149,
   duration: "2–8 hrs",
   tagline: "Professional collision, dent, and panel repairs restored to pre-accident condition.",
   items: [
@@ -38,8 +38,8 @@ export const SERVICE_CATALOG = [
   {
     id: "oil-fluid-maintenance",
     name: "Oil, Filter & Fluid Maintenance",
+    image: "/Oil, Filter & Fluid Maintenance.png",
     icon: "droplet",
-    priceFrom: 49,
     duration: "30–45 min",
     tagline: "Keep everything lubricated, cool, and running clean.",
     items: [
@@ -52,8 +52,8 @@ export const SERVICE_CATALOG = [
   {
     id: "brake-system",
     name: "Brake System Services",
+    image: "/Brake System Services.png",
     icon: "disc",
-    priceFrom: 89,
     duration: "1–2 hrs",
     tagline: "Confident, quiet stopping power you can trust.",
     items: [
@@ -68,7 +68,6 @@ export const SERVICE_CATALOG = [
     name: "Tire & Wheel Services",
     image: "/Tire & Wheel Services.png",
     icon: "tire",
-    priceFrom: 25,
     duration: "30–60 min",
     tagline: "Even wear, straight tracking, and a smooth ride.",
     items: [
@@ -81,8 +80,8 @@ export const SERVICE_CATALOG = [
   {
     id: "battery-electrical",
     name: "Battery & Electrical Diagnostics",
+    image: "/Battery & Electrical Diagnostics.png",
     icon: "bolt",
-    priceFrom: 39,
     duration: "30–90 min",
     tagline: "Reliable starts and a healthy charging system.",
     items: [
@@ -95,8 +94,8 @@ export const SERVICE_CATALOG = [
   {
     id: "hvac",
     name: "Heating, Ventilation & A/C",
+    image: "/Heating, Ventilation & AC.png",
     icon: "snow",
-    priceFrom: 79,
     duration: "1–2 hrs",
     tagline: "Dial in the cabin climate for any season.",
     items: [
@@ -109,8 +108,8 @@ export const SERVICE_CATALOG = [
   {
     id: "steering-suspension",
     name: "Steering & Suspension",
+    image: "/Steering & Suspension.png",
     icon: "spring",
-    priceFrom: 119,
     duration: "1–3 hrs",
     tagline: "Tighten up handling and soak up the bumps.",
     items: [
@@ -123,8 +122,8 @@ export const SERVICE_CATALOG = [
   {
     id: "engine-diagnostics",
     name: "Engine Diagnostics & Performance",
+    image: "/Engine Diagnostics & Performance.png",
     icon: "engine",
-    priceFrom: 99,
     duration: "1–2 hrs",
     tagline: "Decode the check-engine light and restore pep.",
     items: [
@@ -137,8 +136,8 @@ export const SERVICE_CATALOG = [
   {
     id: "exhaust-emission",
     name: "Exhaust & Emission Services",
+    image: "/Exhaust & Emission Services.png",
     icon: "exhaust",
-    priceFrom: 69,
     duration: "1–2 hrs",
     tagline: "Cleaner output and a quieter cruise.",
     items: [
@@ -151,8 +150,8 @@ export const SERVICE_CATALOG = [
   {
     id: "belts-hoses-wipers",
     name: "Belts, Hoses & Wipers",
+    image: "/Belts, Hoses & Wipers.png",
     icon: "belt",
-    priceFrom: 45,
     duration: "30–90 min",
     tagline: "Replace the wear items before they strand you.",
     items: [
@@ -165,8 +164,8 @@ export const SERVICE_CATALOG = [
   {
     id: "vehicle-inspections",
     name: "Comprehensive Vehicle Inspections",
+    image: "/Comprehensive Vehicle Inspections.png",
     icon: "clipboard",
-    priceFrom: 59,
     duration: "45–75 min",
     tagline: "Know exactly where your vehicle stands.",
     items: [
@@ -204,4 +203,4 @@ function buildSlots(startMinutes, endMinutes, step = 30) {
  * Bookable time slots: 9:00 AM (540) through 4:30 PM (990), every 30 minutes.
  * Result: 9:00, 9:30, 10:00 ... 4:00, 4:30 PM (16 slots total).
  */
-export const TIME_SLOTS = buildSlots(9 * 60, 17 * 60 + 30, 30);
+export const TIME_SLOTS = buildSlots(9 * 60, 16 * 60 + 30, 30);

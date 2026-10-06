@@ -2,6 +2,7 @@
 
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import SeoHead from "@/components/seo/SeoHead";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
@@ -11,12 +12,12 @@ import { SERVICE_CATALOG } from "@/data/servicesCatalog";
 /**
  * /services — Master Service Catalog
  * -----------------------------------------------------------------------------
- * Renders all 10 core service categories as informational cards (icon, name,
- * sub-items, price). Each card has a "Learn More" button; clicking it opens
+ * Renders all 11 core service categories as informational cards with imagery,
+ * descriptions, sub-items, and typical timing. Each card has a "Learn More" button; clicking it opens
  * <ServiceDetailModal>, which shows the full image + details and holds the
  * date/time slot picker and the Add to Cart action.
  *
- * Booking is anonymous — the login gate lives at /checkout only.
+ * Booking requests are anonymous and require no account.
  */
 
 /* --- Small inline icon set (valid single-file SVGs, theme-aware) ---------- */
@@ -97,50 +98,64 @@ function ServiceCard({ service, index, onOpen }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, ease: "easeOut", delay: (index % 3) * 0.05 }}
-      className="surface-elevated flex flex-col rounded-2xl p-6 shadow-panel"
+      className="surface-elevated flex flex-col overflow-hidden rounded-2xl shadow-panel"
     >
-      {/* Header: icon + name + tagline */}
-      <div className="mb-4 flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600/10 text-brand-600">
-          <ServiceIcon name={service.icon} />
-        </span>
-        <div>
-          <h2 className="font-display text-lg font-bold leading-tight tracking-tight">
-            {service.name}
-          </h2>
-          <p className="mt-0.5 text-sm text-secondary">{service.tagline}</p>
+      <button
+        type="button"
+        onClick={open}
+        className="group relative aspect-[16/9] w-full overflow-hidden bg-metal-900/10 text-left"
+        aria-label={`View ${service.name} details`}
+      >
+        <Image
+          src={service.image}
+          alt={`${service.name} service at A1 Buller Auto Collision`}
+          fill
+          sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <span className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+      </button>
+
+      <div className="flex flex-1 flex-col p-6">
+        {/* Header: icon + name + tagline */}
+        <div className="mb-4 flex items-start gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600/10 text-brand-600">
+            <ServiceIcon name={service.icon} />
+          </span>
+          <div>
+            <h2 className="font-display text-lg font-bold leading-tight tracking-tight">
+              {service.name}
+            </h2>
+            <p className="mt-0.5 text-sm text-secondary">{service.tagline}</p>
+          </div>
         </div>
-      </div>
 
-      {/* Sub-items */}
-      <ul className="mb-4 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-        {service.items.map((item) => (
-          <li key={item} className="flex items-center gap-2 text-sm text-secondary">
-            <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-brand-600" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M5 12l4 4 10-10" />
+        {/* Sub-items */}
+        <ul className="mb-4 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+          {service.items.map((item) => (
+            <li key={item} className="flex items-center gap-2 text-sm text-secondary">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-brand-600" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12l4 4 10-10" />
+              </svg>
+              {item}
+            </li>
+          ))}
+        </ul>
+
+        {/* Typical duration; final timing is confirmed after inspection. */}
+        <div className="mb-5 text-sm text-secondary">
+          Typical service time: {service.duration}
+        </div>
+
+        {/* Learn More — opens the detail modal (image + details + booking) */}
+        <div className="mt-auto">
+          <Button onClick={open} className="w-full justify-center">
+            Learn More
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
-            {item}
-          </li>
-        ))}
-      </ul>
-
-      {/* Price + duration */}
-      <div className="mb-5 flex items-center gap-4 text-sm">
-        <span className="font-semibold text-[rgb(var(--text-primary))]">
-          From ${service.priceFrom}
-        </span>
-        <span className="text-secondary">·</span>
-        <span className="text-secondary">{service.duration}</span>
-      </div>
-
-      {/* Learn More — opens the detail modal (image + details + booking) */}
-      <div className="mt-auto">
-        <Button onClick={open} className="w-full justify-center">
-          Learn More
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </Button>
+          </Button>
+        </div>
       </div>
     </motion.article>
   );
