@@ -37,9 +37,9 @@ const Button = forwardRef(function Button(
   },
   ref
 ) {
-  // framer-motion can animate any element via motion(Component). Memoize so the
+  // Framer Motion can animate any element via motion.create(Component). Memoize so the
   // wrapped component keeps a stable identity across renders (avoids remounts).
-  const MotionComp = useMemo(() => motion(Component), [Component]);
+  const MotionComp = useMemo(() => motion.create(Component), [Component]);
 
   return (
     <MotionComp
