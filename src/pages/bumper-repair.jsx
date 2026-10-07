@@ -7,6 +7,8 @@ const CONFIG = {
   heading: "Bumper Repair in Burnaby",
   subheading:
     "Cracked, scuffed, or hanging bumper? We repair instead of replace wherever it's safe to — saving you time and money, with a finish that matches the factory paint.",
+  metaDescription:
+    "Bumper repair in Burnaby for cracks, scuffs, damaged mounts, paint, and sensor-equipped bumpers. Send photos for a repair assessment.",
   badges: ["Repair Before Replace", "ICBC Accredited", "Sensor-Safe", "Free Estimate"],
   benefits: [
     {

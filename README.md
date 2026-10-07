@@ -52,6 +52,12 @@ the remote blog feed.
 - **Programmatic SEO** — `src/pages/services/[service]/[location].jsx` generates
   a unique, statically rendered landing page for every service × location, each
   with custom title, meta description, H1, body copy, JSON-LD, and internal links.
+- **Local authority content** — five first-party repair guides, an About page,
+  visible breadcrumbs, article metadata, and a privacy policy support customer
+  trust and long-tail search discovery without depending on a remote blog feed.
+- **Conversion event bridge** — successful estimate and appointment requests,
+  plus phone, WhatsApp, directions, and key CTA clicks, are pushed to
+  `window.dataLayer` so a consent-aware analytics provider can be connected later.
 
 ## Project structure
 

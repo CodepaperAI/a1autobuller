@@ -3,6 +3,7 @@ import { services, locations } from "@/data/seo";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
 import { BUSINESS } from "@/data/business";
+import { trackConversion } from "@/lib/analytics";
 /**
  * Footer
  * -----------------------------------------------------------------------------
@@ -16,9 +17,11 @@ const QUICK_LINKS = [
   { label: "Auto Paint Repair", href: "/auto-paint-repair" },
   { label: "FAQs", href: "/faq" },
   { label: "Our Services", href: "/services" },
+  { label: "About Our Shop", href: "/about" },
   { label: "Book an Appointment", href: "/services" },
   { label: "Blog", href: "/blog" },
   { label: "Contact Us", href: "/contact" },
+  { label: "Privacy Policy", href: "/privacy" },
 ];
 const SOCIAL_LINKS = [
   {
@@ -78,7 +81,7 @@ const { theme, mounted } = useTheme();
           <div className="flex items-center">
   {mounted && (
     <Image
-      src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+      src={theme === "dark" ? "/logo-dark-640.png" : "/logo-light-640.png"}
       alt="A1 Buller Auto Collisions"
       width={220}
       height={60}
@@ -157,6 +160,7 @@ const { theme, mounted } = useTheme();
         href={BUSINESS.mapsUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => trackConversion("directions_click", { location: "footer" })}
         className="transition-colors hover:text-brand-600"
       >
         {BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada
@@ -177,6 +181,7 @@ const { theme, mounted } = useTheme();
 
       
     <a href={`tel:${BUSINESS.phone}`}
+        onClick={() => trackConversion("phone_click", { location: "footer" })}
         className="transition-colors hover:text-brand-600"
       >
         {BUSINESS.phoneDisplay}
@@ -257,6 +262,7 @@ const { theme, mounted } = useTheme();
     target="_blank"
     rel="noopener noreferrer"
     aria-label="WhatsApp"
+    onClick={() => trackConversion("whatsapp_click", { location: "footer" })}
     className="flex items-center gap-3 text-secondary transition-colors hover:text-brand-600"
   >
     <div className="flex h-10 w-10 items-center justify-center rounded-xl surface-elevated">

@@ -42,8 +42,6 @@ export default function SeoHead({
       <meta property="og:locale" content="en_CA" />
       <meta property="og:image" content={image} />
       <meta property="og:image:alt" content={imageAlt} />
-      <meta property="og:image:width" content="2048" />
-      <meta property="og:image:height" content="768" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />

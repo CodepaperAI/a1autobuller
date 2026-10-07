@@ -30,6 +30,7 @@ export const services = [
   {
     slug: "frame-racking",
     name: "Frame Racking & Straightening",
+    seoName: "Frame Straightening",
     short: "Computerized frame straightening",
     category: "Collision & Structural",
     highlights: [
@@ -237,8 +238,13 @@ export const getAllPaths = () =>
 // ---------------------------------------------------------------------------
 export function buildSeo(service, location) {
   const area = `${location.name}, ${location.region}`;
+  const topic = `${service.seoName || service.name} in ${location.name}, BC`;
+  const fullBrandTitle = `${topic} | A1 Buller Auto Collision`;
   return {
-    title: `${service.name} in ${location.name}, BC | A1 Buller Auto`,
+    title:
+      fullBrandTitle.length <= 60
+        ? fullBrandTitle
+        : `${topic} | A1 Buller Auto`,
     metaDescription: `${service.name} at our ${area} auto repair facility. Clear estimates, documented repairs, and direct help from A1 Buller Auto Collision.`,
     heading: `${service.name} in ${location.name}, BC`,
     subheading: `Professional ${service.category.toLowerCase()} service at 7055 Buller Ave, with clear estimates and a documented repair process.`,

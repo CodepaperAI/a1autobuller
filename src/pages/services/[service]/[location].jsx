@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import SeoHead from "@/components/seo/SeoHead";
 import { BUSINESS } from "@/data/business";
+import { trackConversion } from "@/lib/analytics";
 import {
   getService,
   getLocation,
@@ -97,8 +98,12 @@ export default function LocalServicePage({
 
   // Declared before any early return so Hooks run in a stable order.
   const handleBook = useCallback(() => {
+    trackConversion("appointment_cta_click", {
+      location: "service_page",
+      service: service?.slug,
+    });
     router.push("/services");
-  }, [router]);
+  }, [router, service?.slug]);
 
   // fallback:'blocking' means this is always resolved, but guard just in case.
   if (router.isFallback) {
@@ -201,7 +206,13 @@ export default function LocalServicePage({
               <Button size="lg" onClick={handleBook}>
                 Book {service.name} in {location.name}
               </Button>
-              <Button size="lg" variant="secondary" as="a" href={`tel:${BUSINESS.phone}`}>
+              <Button
+                size="lg"
+                variant="secondary"
+                as="a"
+                href={`tel:${BUSINESS.phone}`}
+                onClick={() => trackConversion("phone_click", { location: "service_page", service: service.slug })}
+              >
                 Call {BUSINESS.phoneDisplay}
               </Button>
             </div>
@@ -304,6 +315,7 @@ export default function LocalServicePage({
               </Button>
               <a
                 href={`tel:${BUSINESS.phone}`}
+                onClick={() => trackConversion("phone_click", { location: "service_page_cta", service: service.slug })}
                 className="inline-flex items-center justify-center rounded-xl border border-white/50 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
                 Call {BUSINESS.phoneDisplay}

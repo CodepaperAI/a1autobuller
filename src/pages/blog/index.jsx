@@ -3,6 +3,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { listBlogs } from "@/lib/blog";
 import SeoHead from "@/components/seo/SeoHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 /**
  * /blog — Blog listing. Statically generated, revalidated hourly (ISR).
@@ -17,7 +18,7 @@ export async function getStaticProps() {
 
 function formatDate(value) {
   if (!value) return "";
-  const d = new Date(value);
+  const d = new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value);
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
@@ -32,6 +33,10 @@ export default function BlogIndex({ blogs }) {
       />
 
       <section className="section py-14 sm:py-20">
+        <Breadcrumbs
+          items={[{ label: "Home", href: "/" }, { label: "Blog" }]}
+          className="mb-8"
+        />
         <div className="mx-auto max-w-2xl text-center">
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
@@ -47,8 +52,8 @@ export default function BlogIndex({ blogs }) {
             transition={{ duration: 0.5, delay: 0.08 }}
             className="mt-4 text-base text-secondary"
           >
-            Tips, guides, and news on collision repair, refinishing, and keeping
-            your vehicle road-ready.
+            Practical guides on collision claims, dent and bumper repair,
+            structural damage, refinishing, and keeping your vehicle road-ready.
           </motion.p>
         </div>
 

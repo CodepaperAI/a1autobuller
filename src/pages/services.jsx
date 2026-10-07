@@ -5,6 +5,7 @@ import { useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SeoHead from "@/components/seo/SeoHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import ServiceDetailModal from "@/components/ui/ServiceDetailModal";
@@ -179,6 +180,10 @@ export default function ServicesPage() {
       />
 
       <section className="section py-14 sm:py-20">
+        <Breadcrumbs
+          items={[{ label: "Home", href: "/" }, { label: "Services" }]}
+          className="mb-8"
+        />
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
           <motion.h1

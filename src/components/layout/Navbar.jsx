@@ -9,11 +9,13 @@ import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
 import { BUSINESS } from "@/data/business";
+import { trackConversion } from "@/lib/analytics";
 
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
+  { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
   { label: "Certifications", href: "/certifications" },
   { label: "Contact Us", href: "/contact" },
@@ -99,14 +101,14 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setDrawerOpen(false)}
-            className="fixed inset-0 z-[55] bg-black/50 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-[55] bg-black/50 backdrop-blur-sm lg:hidden"
           />
           <motion.aside
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 34 }}
-            className="fixed right-0 top-0 z-[60] flex h-full w-80 max-w-[85%] flex-col border-l divider p-6 font-sans bg-[rgb(var(--surface))] md:hidden"
+            className="fixed right-0 top-0 z-[60] flex h-full w-80 max-w-[85%] flex-col border-l divider p-6 font-sans bg-[rgb(var(--surface))] lg:hidden"
           >
             <div className="mb-8 flex items-center justify-between">
               <span className="font-display text-lg font-extrabold tracking-tight">Menu</span>
@@ -143,7 +145,11 @@ export default function Navbar() {
             </motion.div>
 
             <div className="mt-auto flex flex-col gap-3 pt-6">
-              <Button as="a" href={`tel:${BUSINESS.phone}`}>
+              <Button
+                as="a"
+                href={`tel:${BUSINESS.phone}`}
+                onClick={() => trackConversion("phone_click", { location: "mobile_menu" })}
+              >
                 Call Now
               </Button>
 
@@ -173,7 +179,7 @@ export default function Navbar() {
 >
   {themeMounted && (
     <Image
-      src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+      src={theme === "dark" ? "/logo-dark-640.png" : "/logo-light-640.png"}
       alt="A1 Buller Auto Collisions"
       width={220}
       height={60}
@@ -182,7 +188,7 @@ export default function Navbar() {
     />
   )}
 </Link>
-          <div className="hidden items-center gap-1 md:flex">
+          <div className="hidden items-center gap-1 lg:flex">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -202,10 +208,15 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-2 lg:flex">
             <CartButton />
             <ModeToggle />
-            <Button size="sm" as="a" href={`tel:${BUSINESS.phone}`}>
+            <Button
+              size="sm"
+              as="a"
+              href={`tel:${BUSINESS.phone}`}
+              onClick={() => trackConversion("phone_click", { location: "desktop_nav" })}
+            >
               Call Now
             </Button>
 
@@ -214,7 +225,7 @@ export default function Navbar() {
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <CartButton />
             <ModeToggle />
             <button

@@ -7,6 +7,8 @@ const CONFIG = {
   heading: "Car Dent Repair in Burnaby",
   subheading:
     "Door dings, parking-lot dents, creases, and hail damage — repaired so cleanly you'd never know they were there. Free estimates, lifetime workmanship warranty.",
+  metaDescription:
+    "Car dent repair in Burnaby for door dings, creases, hail damage, and damaged paint. Send photos for a clear, no-obligation estimate.",
   badges: ["ICBC Accredited", "Red Seal Technician", "Free Estimate", "Lifetime Warranty"],
   benefits: [
     {

@@ -39,7 +39,7 @@ export const LOCAL_BUSINESS_SCHEMA = {
   url: BUSINESS.siteUrl,
   description:
     "Burnaby auto body and collision repair shop providing ICBC claim support, structural repair, refinishing, aluminum and EV repair, and mechanical service.",
-  logo: absoluteUrl("/logo-light.png"),
+  logo: absoluteUrl("/logo-light-640.png"),
   image: absoluteUrl("/hero-auto-body-shop.jpg"),
   telephone: BUSINESS.phone,
   email: BUSINESS.email,

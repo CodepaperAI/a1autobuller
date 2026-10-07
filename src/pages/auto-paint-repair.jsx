@@ -7,6 +7,8 @@ const CONFIG = {
   heading: "Auto Paint Repair in Burnaby",
   subheading:
     "Scratches, chips, fading, and peeling clear coat — refinished with computerized colour matching so the repair is invisible against your original paint.",
+  metaDescription:
+    "Auto paint repair in Burnaby for scratches, chips, fading, and damaged clear coat, with computerized colour matching and controlled refinishing.",
   badges: ["Computerized Colour Match", "Downdraft Booth", "Lifetime Warranty", "Free Estimate"],
   benefits: [
     {

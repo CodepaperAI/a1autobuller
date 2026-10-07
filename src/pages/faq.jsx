@@ -5,6 +5,7 @@ import FaqSection from "@/components/sections/FaqSection";
 import SeoHead from "@/components/seo/SeoHead";
 import { FAQS, FAQ_GROUPS, faqsByGroup, buildFaqJsonLd } from "@/data/faqs";
 import { BUSINESS } from "@/data/business";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 /**
  * /faq — Answer hub
@@ -26,6 +27,10 @@ export default function FaqPage() {
       />
 
       <section className="section pt-14 sm:pt-20">
+        <Breadcrumbs
+          items={[{ label: "Home", href: "/" }, { label: "FAQs" }]}
+          className="mb-8"
+        />
         <div className="mx-auto max-w-3xl">
           <motion.span
             initial={{ opacity: 0, y: 10 }}

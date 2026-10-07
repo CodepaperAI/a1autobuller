@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/context/CartContext";
+import { trackConversion } from "@/lib/analytics";
 
 /**
  * /checkout — Booking review + finalization
@@ -82,6 +83,10 @@ export default function CheckoutPage() {
         throw new Error(data.error || "Could not send your booking.");
       }
 
+      trackConversion("appointment_request", {
+        form_name: "appointment_checkout",
+        service_count: items.length,
+      });
       clearCart();
       setSubmitted(true);
     } catch (err) {

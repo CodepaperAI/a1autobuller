@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BUSINESS } from "@/data/business";
+import { trackConversion } from "@/lib/analytics";
 
 /**
  * WhatsAppButton  ->  src/components/ui/WhatsAppButton.jsx
@@ -30,6 +31,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
+      onClick={() => trackConversion("whatsapp_click", { location: "floating_button" })}
       className="group fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/25 transition-transform duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#25D366]/40"
     >
       <span className="pointer-events-none absolute right-16 hidden whitespace-nowrap rounded-lg bg-black/80 px-3 py-1.5 text-sm font-medium text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:block">

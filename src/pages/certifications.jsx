@@ -1,6 +1,7 @@
 import SeoHead from "@/components/seo/SeoHead";
 import { motion } from "framer-motion";
 import Card from "@/components/ui/Card";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 /**
  * Certifications page
@@ -13,12 +14,12 @@ const CERTS = [
   {
   name: "ICBC Repair Network",
   detail:
-    "Accredited facility providing hassle-free, direct claims processing and vehicle repairs backed by an ICBC-approved lifetime warranty.",
+    "Repair-network participation that supports eligible claim handling, estimating, documentation, and repairs under current ICBC requirements.",
 },
   {
     name: "I-CAR Gold Class",
     detail:
-      "The highest industry recognition for collision repair training — held by fewer than 1 in 10 shops nationwide.",
+      "An industry training recognition focused on maintaining role-relevant collision repair knowledge across the shop.",
   },
   {
     name: "Toyota Certified Collision",
@@ -58,6 +59,10 @@ export default function CertificationsPage() {
       />
 
       <section className="section py-20 sm:py-28">
+      <Breadcrumbs
+        items={[{ label: "Home", href: "/" }, { label: "Certifications" }]}
+        className="mb-8"
+      />
       <div className="mx-auto max-w-3xl text-center">
   <motion.h1
     initial={{ opacity: 0, y: 20 }}
@@ -78,14 +83,22 @@ export default function CertificationsPage() {
     exactly what our credentials mean for your vehicle’s safety and resale value.
   </motion.p>
 </div>
-
-
+        <div className="mt-14 max-w-2xl">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
+            What our repair credentials mean
+          </h2>
+          <p className="mt-3 leading-relaxed text-secondary">
+            Training, tooling, documentation, and vehicle-specific procedures all
+            contribute to a complete repair plan. Ask our team which credentials
+            and procedures apply to your vehicle and the work it needs.
+          </p>
+        </div>
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-40px" }}
-          className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
           {CERTS.map((c) => (
             <Card key={c.name} reveal className="h-full">

@@ -38,7 +38,7 @@ export const SERVICE_CATALOG = [
   {
     id: "oil-fluid-maintenance",
     name: "Oil, Filter & Fluid Maintenance",
-    image: "/Oil, Filter & Fluid Maintenance.png",
+    image: "/oil-filter-fluid-maintenance.png",
     icon: "droplet",
     duration: "30–45 min",
     tagline: "Keep everything lubricated, cool, and running clean.",
@@ -66,7 +66,7 @@ export const SERVICE_CATALOG = [
   {
     id: "tire-wheel",
     name: "Tire & Wheel Services",
-    image: "/Tire & Wheel Services.png",
+    image: "/tire-wheel-services.png",
     icon: "tire",
     duration: "30–60 min",
     tagline: "Even wear, straight tracking, and a smooth ride.",
@@ -80,7 +80,7 @@ export const SERVICE_CATALOG = [
   {
     id: "battery-electrical",
     name: "Battery & Electrical Diagnostics",
-    image: "/Battery & Electrical Diagnostics.png",
+    image: "/battery-electrical-diagnostics.png",
     icon: "bolt",
     duration: "30–90 min",
     tagline: "Reliable starts and a healthy charging system.",
@@ -94,7 +94,7 @@ export const SERVICE_CATALOG = [
   {
     id: "hvac",
     name: "Heating, Ventilation & A/C",
-    image: "/Heating, Ventilation & AC.png",
+    image: "/heating-ventilation-ac.png",
     icon: "snow",
     duration: "1–2 hrs",
     tagline: "Dial in the cabin climate for any season.",
@@ -108,7 +108,7 @@ export const SERVICE_CATALOG = [
   {
     id: "steering-suspension",
     name: "Steering & Suspension",
-    image: "/Steering & Suspension.png",
+    image: "/steering-suspension.png",
     icon: "spring",
     duration: "1–3 hrs",
     tagline: "Tighten up handling and soak up the bumps.",
@@ -122,7 +122,7 @@ export const SERVICE_CATALOG = [
   {
     id: "engine-diagnostics",
     name: "Engine Diagnostics & Performance",
-    image: "/Engine Diagnostics & Performance.png",
+    image: "/engine-diagnostics-performance.png",
     icon: "engine",
     duration: "1–2 hrs",
     tagline: "Decode the check-engine light and restore pep.",
@@ -136,7 +136,7 @@ export const SERVICE_CATALOG = [
   {
     id: "exhaust-emission",
     name: "Exhaust & Emission Services",
-    image: "/Exhaust & Emission Services.png",
+    image: "/exhaust-emission-services.png",
     icon: "exhaust",
     duration: "1–2 hrs",
     tagline: "Cleaner output and a quieter cruise.",
@@ -150,7 +150,7 @@ export const SERVICE_CATALOG = [
   {
     id: "belts-hoses-wipers",
     name: "Belts, Hoses & Wipers",
-    image: "/Belts, Hoses & Wipers.png",
+    image: "/belts-hoses-wipers.png",
     icon: "belt",
     duration: "30–90 min",
     tagline: "Replace the wear items before they strand you.",

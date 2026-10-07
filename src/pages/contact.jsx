@@ -1,6 +1,7 @@
 import SeoHead from "@/components/seo/SeoHead";
 import { motion } from "framer-motion";
 import ContactSection from "@/components/sections/ContactSection";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 /**
  * /contact — Dedicated contact page (Phase 1)
@@ -13,12 +14,16 @@ export default function ContactPage() {
   return (
     <>
       <SeoHead
-        title="Contact A1 Buller Auto Collision | Burnaby, BC"
+        title="Contact Our Burnaby Auto Body Shop | A1 Buller Auto"
         description="Contact A1 Buller Auto Collision in Burnaby for a repair estimate. Send details and vehicle photos, call (604) 423-4524, or visit 7055 Buller Ave."
         path="/contact"
       />
 
       <section className="section pt-14 sm:pt-20">
+        <Breadcrumbs
+          items={[{ label: "Home", href: "/" }, { label: "Contact" }]}
+          className="mb-8"
+        />
         <div className="mx-auto max-w-2xl text-center">
           <motion.h1
             initial={{ opacity: 0, y: 12 }}

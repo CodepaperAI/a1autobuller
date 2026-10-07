@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { listBlogs, getBlog } from "@/lib/blog";
 import SeoHead from "@/components/seo/SeoHead";
 import { absoluteUrl, BUSINESS } from "@/data/business";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 /**
  * /blog/[slug] — Single blog post. Pre-renders known slugs, and uses
@@ -23,7 +24,7 @@ export async function getStaticProps({ params }) {
 
 function formatDate(value) {
   if (!value) return "";
-  const d = new Date(value);
+  const d = new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value);
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
@@ -33,17 +34,35 @@ export default function BlogPost({ blog }) {
   const path = `/blog/${blog.slug}`;
   const title = meta.seoTitle || `${blog.title} | A1 Buller Auto`;
   const description = meta.seoDescription || blog.excerpt || "";
+  const socialImage = blog.featuredImage
+    ? blog.featuredImage.startsWith("http")
+      ? blog.featuredImage
+      : absoluteUrl(blog.featuredImage)
+    : absoluteUrl("/hero-auto-body-shop.jpg");
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: blog.title,
     description,
     url: absoluteUrl(path),
-    image: blog.featuredImage || absoluteUrl("/logo-light.png"),
+    image: socialImage,
     datePublished: blog.publishDate || undefined,
     dateModified: blog.updatedAt || blog.publishDate || undefined,
-    author: blog.authorName ? { "@type": "Person", name: blog.authorName } : { "@type": "Organization", name: BUSINESS.name },
+    author: {
+      "@type": "Organization",
+      name: blog.authorName || BUSINESS.name,
+      url: absoluteUrl("/about"),
+    },
     publisher: { "@id": `${BUSINESS.siteUrl}/#business` },
+  };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: BUSINESS.siteUrl },
+      { "@type": "ListItem", position: 2, name: "Blog", item: absoluteUrl("/blog") },
+      { "@type": "ListItem", position: 3, name: blog.title },
+    ],
   };
 
   return (
@@ -53,21 +72,23 @@ export default function BlogPost({ blog }) {
         description={description}
         path={path}
         type="article"
-        image={blog.featuredImage || undefined}
+        image={socialImage}
+        imageAlt={blog.title}
         keywords={meta.keywords}
-        jsonLd={articleSchema}
+        jsonLd={[articleSchema, breadcrumbSchema]}
       />
 
       <article className="section py-14 sm:py-20">
         <div className="mx-auto max-w-3xl">
           {/* Breadcrumb */}
-          <nav className="mb-6 text-sm text-secondary" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-brand-600">Home</Link>
-            <span className="px-2">/</span>
-            <Link href="/blog" className="hover:text-brand-600">Blog</Link>
-            <span className="px-2">/</span>
-            <span className="text-[rgb(var(--text-primary))]">{blog.title}</span>
-          </nav>
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Blog", href: "/blog" },
+              { label: blog.title },
+            ]}
+            className="mb-6"
+          />
 
           <motion.header
             initial={{ opacity: 0, y: 16 }}
@@ -83,7 +104,11 @@ export default function BlogPost({ blog }) {
               {blog.title}
             </h1>
             <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-secondary">
-              {blog.authorName ? <span>By {blog.authorName}</span> : null}
+              {blog.authorName ? (
+                <Link href="/about" className="hover:text-brand-600 hover:underline">
+                  By {blog.authorName}
+                </Link>
+              ) : null}
               {blog.publishDate ? (
                 <>
                   <span aria-hidden>·</span>
@@ -117,6 +142,18 @@ export default function BlogPost({ blog }) {
             className="prose-blog mt-8 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: blog.content || "" }}
           />
+
+          <aside className="mt-10 rounded-2xl border divider p-6">
+            <h2 className="font-display text-lg font-bold">About this guide</h2>
+            <p className="mt-2 text-sm leading-relaxed text-secondary">
+              Published by the A1 Buller Auto Collision team in Burnaby to explain
+              common repair considerations. Vehicle condition, manufacturer
+              procedures, and insurer requirements determine the actual repair.
+            </p>
+            <Link href="/about" className="mt-3 inline-block text-sm font-semibold text-brand-600 hover:underline">
+              Learn about our shop and review process →
+            </Link>
+          </aside>
 
           {Array.isArray(blog.tags) && blog.tags.length ? (
             <div className="mt-10 flex flex-wrap gap-2 border-t divider pt-6">

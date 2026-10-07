@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input, Textarea } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { BUSINESS } from "@/data/business";
+import { trackConversion } from "@/lib/analytics";
 
 /**
  * ContactSection
@@ -128,6 +129,10 @@ export default function ContactSection() {
         throw new Error(data.error || "Failed to send your message.");
       }
 
+      trackConversion("generate_lead", {
+        form_name: "contact_estimate",
+        page_path: window.location.pathname,
+      });
       setSubmitted(true);
       setValues({ name: "", email: "", phone: "", message: "", website: "" });
       setFiles([]);
@@ -179,6 +184,7 @@ export default function ContactSection() {
                 href={BUSINESS.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackConversion("directions_click", { location: "contact_section" })}
                 className="transition-colors hover:text-brand-600"
               >
                 {BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}, Canada
@@ -187,7 +193,11 @@ export default function ContactSection() {
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/10 text-brand-600">📞</span>
-              <a href={`tel:${BUSINESS.phone}`} className="transition-colors hover:text-brand-600">
+              <a
+                href={`tel:${BUSINESS.phone}`}
+                onClick={() => trackConversion("phone_click", { location: "contact_section" })}
+                className="transition-colors hover:text-brand-600"
+              >
                 {BUSINESS.phoneDisplay}
               </a>
             </div>

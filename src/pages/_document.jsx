@@ -21,7 +21,7 @@ const themeScript = `
 
 export default function Document() {
   return (
-    <Html lang="en">
+    <Html lang="en-CA">
       <Head>
         {/* Runs before hydration to prevent a theme flash. */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
+import { trackConversion } from "@/lib/analytics";
 
 /**
  * Hero
@@ -35,6 +36,7 @@ const item = {
 
 export default function Hero() {
   const scrollToContact = useCallback(() => {
+    trackConversion("estimate_cta_click", { location: "homepage_hero" });
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
@@ -73,7 +75,7 @@ export default function Hero() {
             variants={item}
             className="text-balance text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl"
           >
-            Your car, restored to{" "}
+            Burnaby auto body &amp; collision repair, restored to{" "}
             <span className="text-brand-300">factory-precise</span> condition.
           </motion.h1>
 
@@ -90,7 +92,12 @@ export default function Hero() {
 
           {/* CTAs */}
           <motion.div variants={item} className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" as="a" href="/services">
+            <Button
+              size="lg"
+              as="a"
+              href="/services"
+              onClick={() => trackConversion("appointment_cta_click", { location: "homepage_hero" })}
+            >
               Book an Appointment
             </Button>
             <Button

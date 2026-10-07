@@ -2,7 +2,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import SeoHead from "@/components/seo/SeoHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import { BUSINESS } from "@/data/business";
+import { trackConversion } from "@/lib/analytics";
 
 /**
  * LandingPage  ->  src/components/sections/LandingPage.jsx
@@ -87,6 +89,11 @@ export default function LandingPage({ config }) {
         throw new Error(data.error || "Failed to send. Please try again.");
       }
 
+      trackConversion("generate_lead", {
+        form_name: "service_landing_estimate",
+        service: config.slug,
+        page_path: `/${config.slug}`,
+      });
       setSent(true);
       setValues({ name: "", email: "", phone: "", message: "", website: "" });
       setFiles([]);
@@ -133,12 +140,20 @@ export default function LandingPage({ config }) {
     <>
       <SeoHead
         title={`${config.heading} | A1 Buller Auto Collision`}
-        description={config.subheading}
+        description={config.metaDescription || config.subheading}
         path={path}
         jsonLd={[serviceSchema, breadcrumbSchema]}
       />
 
       <section className="section py-14 sm:py-20">
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Services", href: "/services" },
+            { label: config.heading },
+          ]}
+          className="mb-8"
+        />
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           {/* Left: pitch */}
           <div>
@@ -179,13 +194,21 @@ export default function LandingPage({ config }) {
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button as="a" href={`tel:${BUSINESS.phone}`} size="lg">
+              <Button
+                as="a"
+                href={`tel:${BUSINESS.phone}`}
+                size="lg"
+                onClick={() => trackConversion("phone_click", { location: config.slug })}
+              >
                 Call {BUSINESS.phoneDisplay}
               </Button>
               <span className="text-sm text-secondary">or send photos →</span>
             </div>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <h2 className="mt-10 font-display text-2xl font-extrabold tracking-tight">
+              Why drivers choose A1 Buller Auto
+            </h2>
+            <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {config.benefits.map((b, i) => (
                 <motion.div
                   key={b.title}
