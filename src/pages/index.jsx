@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <SeoHead
-        title="Auto Body & Collision Repair in Burnaby, BC | A1 Buller Auto"
+        title="Auto Body Shop in Burnaby, BC | A1 Buller Auto"
         description="Burnaby auto body and collision repair for ICBC claims, dents, bumpers, refinishing, frame repair, alignment, brakes, tires, and mechanical service."
         path="/"
         keywords={[

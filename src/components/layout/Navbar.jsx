@@ -153,7 +153,7 @@ export default function Navbar() {
                 Call Now
               </Button>
 
-              <Button as={Link} href="/services">Book an Appointment</Button>
+              <Button as={Link} href="/estimate">Send Photos for an Estimate</Button>
             </div>
           </motion.aside>
         </>
@@ -220,8 +220,8 @@ export default function Navbar() {
               Call Now
             </Button>
 
-            <Button size="sm" as={Link} href="/services">
-              Book an Appointment
+            <Button size="sm" as={Link} href="/estimate">
+              Get an Estimate
             </Button>
           </div>
 

@@ -8,6 +8,12 @@ const STATIC_PATHS = [
   "/car-dent-repair",
   "/bumper-repair",
   "/auto-paint-repair",
+  "/estimate",
+  "/icbc-claims",
+  "/paintless-dent-repair",
+  "/scratch-repair",
+  "/hail-damage-repair",
+  "/service-areas",
   "/certifications",
   "/about",
   "/faq",
@@ -16,7 +22,7 @@ const STATIC_PATHS = [
   "/privacy",
 ];
 
-const SITE_UPDATED = "2026-10-06";
+const SITE_UPDATED = "2026-10-07";
 
 function escapeXml(value) {
   return String(value)

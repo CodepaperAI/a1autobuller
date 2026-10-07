@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import SeoHead from "@/components/seo/SeoHead";
@@ -135,14 +136,25 @@ export default function LandingPage({ config }) {
       { "@type": "ListItem", position: 2, name: config.heading },
     ],
   };
+  const faqSchema = config.faqs?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: config.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
+        })),
+      }
+    : null;
 
   return (
     <>
       <SeoHead
-        title={`${config.heading} | A1 Buller Auto Collision`}
+        title={config.seoTitle || `${config.heading} | A1 Buller Auto Collision`}
         description={config.metaDescription || config.subheading}
         path={path}
-        jsonLd={[serviceSchema, breadcrumbSchema]}
+        jsonLd={[serviceSchema, breadcrumbSchema, faqSchema]}
       />
 
       <section className="section py-14 sm:py-20">
@@ -352,6 +364,60 @@ export default function LandingPage({ config }) {
             )}
           </motion.div>
         </div>
+
+        {config.sections?.length ? (
+          <div className="mx-auto mt-16 max-w-4xl border-t divider pt-14">
+            <div className="grid gap-8 md:grid-cols-2">
+              {config.sections.map((section) => (
+                <article key={section.title}>
+                  <h2 className="font-display text-2xl font-extrabold tracking-tight">
+                    {section.title}
+                  </h2>
+                  <p className="mt-3 leading-relaxed text-secondary">{section.body}</p>
+                  {section.items?.length ? (
+                    <ul className="mt-4 space-y-2 text-sm text-secondary">
+                      {section.items.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span aria-hidden className="mt-0.5 text-brand-600">✓</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {config.faqs?.length ? (
+          <section className="mx-auto mt-16 max-w-4xl" aria-labelledby={`${config.slug}-faq-heading`}>
+            <h2 id={`${config.slug}-faq-heading`} className="font-display text-3xl font-extrabold tracking-tight">
+              Frequently asked questions
+            </h2>
+            <div className="mt-6 space-y-4">
+              {config.faqs.map((faq) => (
+                <article key={faq.q} className="rounded-2xl border divider p-5">
+                  <h3 className="font-display text-lg font-bold">{faq.q}</h3>
+                  <p className="mt-2 leading-relaxed text-secondary">{faq.a}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {config.relatedLinks?.length ? (
+          <nav className="mx-auto mt-12 max-w-4xl rounded-2xl surface-elevated p-6" aria-label="Related services">
+            <h2 className="font-display text-xl font-extrabold tracking-tight">Related repair information</h2>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {config.relatedLinks.map((link) => (
+                <Link key={link.href} href={link.href} className="rounded-xl border divider px-4 py-2 text-sm font-semibold transition-colors hover:border-brand-500 hover:text-brand-600">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        ) : null}
       </section>
     </>
   );

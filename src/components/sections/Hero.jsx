@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
@@ -35,11 +34,6 @@ const item = {
 };
 
 export default function Hero() {
-  const scrollToContact = useCallback(() => {
-    trackConversion("estimate_cta_click", { location: "homepage_hero" });
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
   return (
     <section className="relative isolate min-h-[720px] overflow-hidden bg-metal-950 sm:min-h-[760px]">
       <Image
@@ -75,7 +69,7 @@ export default function Hero() {
             variants={item}
             className="text-balance text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl"
           >
-            Burnaby auto body &amp; collision repair, restored to{" "}
+            Burnaby auto body shop for collision repairs restored to{" "}
             <span className="text-brand-300">factory-precise</span> condition.
           </motion.h1>
 
@@ -103,7 +97,9 @@ export default function Hero() {
             <Button
               size="lg"
               variant="secondary"
-              onClick={scrollToContact}
+              as="a"
+              href="/estimate"
+              onClick={() => trackConversion("estimate_cta_click", { location: "homepage_hero" })}
               className="border-white/30 bg-white/95 text-slate-950 hover:border-white hover:text-brand-700"
             >
               Get a Free Estimate

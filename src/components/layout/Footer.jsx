@@ -12,6 +12,12 @@ import { trackConversion } from "@/lib/analytics";
  */
 // Campaign / service landing pages
 const QUICK_LINKS = [
+  { label: "Request an Estimate", href: "/estimate" },
+  { label: "ICBC Claims", href: "/icbc-claims" },
+  { label: "Paintless Dent Repair", href: "/paintless-dent-repair" },
+  { label: "Scratch Repair", href: "/scratch-repair" },
+  { label: "Hail Damage Repair", href: "/hail-damage-repair" },
+  { label: "Service Areas", href: "/service-areas" },
   { label: "Car Dent Repair", href: "/car-dent-repair" },
   { label: "Bumper Repair", href: "/bumper-repair" },
   { label: "Auto Paint Repair", href: "/auto-paint-repair" },

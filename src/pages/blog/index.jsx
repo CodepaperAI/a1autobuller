@@ -27,7 +27,7 @@ export default function BlogIndex({ blogs }) {
   return (
     <>
       <SeoHead
-        title="Auto Body & Collision Repair Blog | A1 Buller Auto"
+        title="Auto Body & ICBC Repair Guides | A1 Buller Burnaby"
         description="Auto body, collision repair, insurance claim, refinishing, and vehicle-care guidance from A1 Buller Auto Collision in Burnaby, BC."
         path="/blog"
       />

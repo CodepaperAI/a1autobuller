@@ -207,6 +207,46 @@ export const LOCAL_ARTICLES = [
       ${SHOP_CTA}
     `,
   },
+  {
+    id: "fender-bender-guide",
+    slug: "what-is-a-fender-bender",
+    title: "What Is a Fender Bender—and What Should You Check?",
+    excerpt:
+      "A minor-looking collision can still affect bumper mounts, sensors, lamps, alignment, and hidden structure. Use this practical inspection checklist.",
+    featuredImage: "/Auto Body Repair.png",
+    categories: ["Collision Repair"],
+    tags: ["fender bender", "minor collision", "bumper damage", "Burnaby"],
+    authorName: "A1 Buller Auto Collision Team",
+    publishDate: "2026-10-07",
+    updatedAt: "2026-10-07",
+    customFields: { readingTime: "5 min read" },
+    meta: {
+      seoTitle: "What Is a Fender Bender? Minor Collision Guide",
+      seoDescription:
+        "Learn what a fender bender is, which hidden damage signs to check, when not to drive, and what to photograph before a repair assessment.",
+      keywords: [
+        "what is a fender bender",
+        "minor collision damage",
+        "bumper damage inspection",
+      ],
+    },
+    content: `
+      <p>A fender bender is an informal name for a relatively low-speed collision, often in traffic, a parking lot, or at an intersection. The phrase describes how the incident appears; it does not confirm that damage is only cosmetic. Modern bumper systems, lamps, cameras, radar units, parking sensors, mounting brackets, and body structure can be affected even when the exterior mark looks small.</p>
+      <h2>Start with people and immediate safety</h2>
+      <p>Check for injuries, move out of active traffic when it is safe and permitted, and contact emergency services when needed. Follow the current reporting requirements for the location and circumstances. If you plan to make an ICBC claim, use the current guidance from <a href="https://www.icbc.com/claims" target="_blank" rel="noopener noreferrer">ICBC Claims</a>.</p>
+      <h2>What to photograph</h2>
+      <ul><li>Wide views of the vehicles and scene</li><li>Licence plates and each damaged area</li><li>Close views from several angles</li><li>Panel gaps around the bumper, hood, trunk, doors, and lamps</li><li>Dashboard warning messages</li><li>Debris, road conditions, signs, and lane markings when relevant</li></ul>
+      <h2>Signs the damage may extend beyond a scuff</h2>
+      <p>Look for a loose bumper corner, uneven panel gaps, cracked lamps, rubbing tires, fluid leaks, rattles, new warning messages, steering changes, or parking sensors that no longer work normally. A bumper cover can return close to its original shape while the absorber, reinforcement, brackets, or mounting points behind it remain damaged.</p>
+      <h2>When not to keep driving</h2>
+      <p>Stop and ask for professional advice when the vehicle has a fluid leak, loose or dragging parts, damaged tires, impaired lights, steering or braking changes, smoke, unusual heat, or a safety-system warning. If you are unsure whether the vehicle is roadworthy, do not rely on appearance alone.</p>
+      <h2>What happens during a repair assessment</h2>
+      <p>The shop records visible damage and checks the relationship between the affected panels and nearby systems. Depending on the impact, the next steps may include scanning, alignment checks, structural measurement, trim removal, or bumper disassembly. Any additional damage found should be documented and added to the repair plan before the related work proceeds.</p>
+      <h2>Information that helps the estimator</h2>
+      <ul><li>Vehicle year, make, model, and trim</li><li>Where and how the impact occurred</li><li>Changes in steering, braking, noise, or warning lights</li><li>Insurance claim number when applicable</li><li>Clear photos plus your preferred contact method</li></ul>
+      ${SHOP_CTA}
+    `,
+  },
 ];
 
 export function getLocalArticle(slug) {

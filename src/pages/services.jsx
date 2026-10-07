@@ -12,6 +12,15 @@ import ServiceDetailModal from "@/components/ui/ServiceDetailModal";
 import { SERVICE_CATALOG } from "@/data/servicesCatalog";
 import { services as SEO_SERVICES } from "@/data/seo";
 
+const COMMON_REPAIR_NEEDS = [
+  { label: "Photo Estimate", href: "/estimate", description: "Send vehicle details and damage photos online." },
+  { label: "ICBC Claims", href: "/icbc-claims", description: "Prepare for a collision repair assessment." },
+  { label: "Paintless Dent Repair", href: "/paintless-dent-repair", description: "See when PDR may preserve the original finish." },
+  { label: "Scratch Repair", href: "/scratch-repair", description: "Assess clear-coat, paint, primer, or metal damage." },
+  { label: "Hail Damage Repair", href: "/hail-damage-repair", description: "Plan a complete multi-panel hail inspection." },
+  { label: "Service Areas", href: "/service-areas", description: "Confirm our Burnaby location and nearby service area." },
+];
+
 /**
  * /services — Master Service Catalog
  * -----------------------------------------------------------------------------
@@ -234,6 +243,23 @@ export default function ServicesPage() {
               >
                 <span className="font-semibold">{service.name}</span>
                 <span className="mt-1 block text-sm text-secondary">{service.short}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-3xl border divider p-6 sm:p-10" aria-labelledby="common-repairs-heading">
+          <h2 id="common-repairs-heading" className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Estimate and repair resources
+          </h2>
+          <p className="mt-3 max-w-2xl leading-relaxed text-secondary">
+            Start with the page that matches your repair need, or send photos for an initial estimate request.
+          </p>
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {COMMON_REPAIR_NEEDS.map((item) => (
+              <Link key={item.href} href={item.href} className="rounded-xl surface-elevated p-4 transition-colors hover:text-brand-600">
+                <span className="font-semibold">{item.label}</span>
+                <span className="mt-1 block text-sm text-secondary">{item.description}</span>
               </Link>
             ))}
           </div>
